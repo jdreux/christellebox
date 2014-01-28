@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/main.css">
+        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        
+        {{#each rows}}
+            <div class="row art-row">
+            {{#each this}}
+                {{#if break}}
+                    <div class="col-sm-6">
+                        <div class="logo">
+                            <h1>CHRISTELLE DREUX, ARTISTE</h1>
+                            <h3>Nice, France</h3>
+                        </div>
+                    </div>
+                {{else}}
+                    {{#if news}}
+                    <div class="logo">
+                        <h3 class="pull-left">Expositions</h3>
+                        <div class="clearfix"></div>
+                        {{#each news}}
+                            <p>{{this}}</p>
+                        {{/each}}
+                    </div>
+                    {{else}}
+                    <div class="col-sm-2 {{#if odd}}odd{{/if}}">
+                        <div class="art-frame {{#unless small}}album{{/unless}}">
+                            <div>
+                                {{#if small}}
+                                <img src="{{small}}" data-name="{{name}}" data-album-name="{{albumName}}"/>
+                                <p>{{name}}</p>
+                                {{else}}
+                                <span>{{name}}</span>
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
+                    {{/if}}
+                {{/if}}
+            {{/each}}
+            </div>  
+        {{/each}}
+
+        <div id="picture-modal" class="modal fade" role="dialog" aria-hidden="true"  data-keyboard="true">
+            <div class="modal-dialog">
+                <h2 style="float: left;">
+                    <span class="album"></span>
+                    <span class="name"></span>
+                </h2>
+                <span class="close" data-dismiss="modal">x</span>
+                <div class="clearfix"></div>
+                <div class="row">
+                    <div class="col-xs-1">
+                        <span data-action="prev"><</span>
+                    </div>
+                    <div class="col-xs-10">
+                        <img src=""></img>
+                    </div>
+                    <div class="col-xs-1">
+                        <span data-action="next">></span>
+                    </div>
+                </div>
+                
+                <p>
+                    <span class="text"></span>
+                </p>
+                
+                
+            </div>
+        </div>
+
+
+        <!-- // <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+        <script src="js/vendor/bootstrap.js"></script>
+        <script src="js/plugins.js"></script>
+        <script src="js/main.js"></script>
+        <script>
+
+            function fillModal($img) {
+                console.log($img);
+                $('#picture-modal img').attr('src', $img.attr('src'));
+                $('#picture-modal h2 span.album').text($img.data('album-name')+' | ');
+                $('#picture-modal h2 span.name').text($img.data('name'));
+            }
+
+            $('.art-frame img').click(function(e){
+                e.preventDefault();
+                
+                fillModal($(this));
+
+                $('#picture-modal').modal();
+            });
+
+            $('#picture-modal span[data-action=prev]').click(function(e){
+                e.preventDefault();
+                var $cur = $('.art-frame img[src="'+$('#picture-modal img').attr('src')+'"]'),
+                    $col = $('.art-frame img'),
+                    index = $col.index($cur) == 0 ? $col.length - 1 : $col.index($cur) - 1;
+
+                fillModal($($col[index]));
+            });
+
+            $('#picture-modal span[data-action=next]').click(function(e){
+                e.preventDefault();
+                var $cur = $('.art-frame img[src="'+$('#picture-modal img').attr('src')+'"]'),
+                    $col = $('.art-frame img'),
+                    index = $col.index($cur) == $col.length - 1 ? 0 : $col.index($cur) + 1;
+
+                fillModal($($col[index]));
+            });
+
+
+
+        </script>
+    </body>
+</html>
