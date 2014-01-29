@@ -48,28 +48,8 @@ var express = require('express'),
 				.replace(/\&agrave;/g, 'à')
 				.replace(/\&quot;/g, '"')
 		}
-	}
+	};
 
-var pics = function () {
-
-	var data = require('./old/socatoa_christelledreuxcom.js');
-
-	console.log('data', data);
-
-	return _.map(data.albums, function(a){
-		return {
-			name: utils.normalize(a.ALBUM_NAME),
-			text: utils.normalize( (a.ALBUM_TEXT1 || '') + (a.ALBUM_TEXT2 || '')),
-			art: _(data.pictures).filter({PICTURE_ALBUM_ID: a.ALBUM_ID}).map(function(p){
-				return {
-					name: utils.normalize(p.PICTURE_NAME),
-					uri: '/img/art/'+p.PICTURE_ID
-				}
-			}).value()
-		}
-	});
-
-}
 
 
 app.configure(function(){
@@ -96,54 +76,45 @@ app.configure(function(){
 	});
 });
 
-app.get('/dropbox/albums', function(req, res, next){
+var parseAlbums = _.memoize(function(){
 
-	// client.getAccountInfo(function(error, info){
-	// 	console.log(error, info);
-	// });
+	return _.map(fs.readdirSync('./public/dist/'), function(a) {
 
-	// client.readdir('/website/albums/Iréel du Présent', function(error, info){
-	// 	res.json({
-	// 		error: error,
-	// 		info: info
-	// 	});
-	// });
+		return {
+			name: a,
+			art: _.map(fs.readdirSync('./public/dist/'+a), function(p){
+				if(p.indexOf('.thumbnail.')>-1) return;
+				var name = path.basename(p, path.extname(p));
+				return {	
+					name: name,
+					src: '/dist/'+a+'/'+p,
+					thumbnail: '/dist/'+a+'/'+name+'.thumbnail'+path.extname(p)
+				};
+			})
+		}
 
-	// client.metadata('/website/albums/Iréel du Présent/cinquième.jpg', function(error, info){
-	// 	res.json({
-	// 		error: error,
-	// 		info: info
-	// 	});
-	// });
-
-	client.thumbnailUrl('/website/albums/Iréel du présent/cinquième.jpg', function(error, info){
-		res.json({
-			error: error,
-			info: info
-		});		
 	});
+
+	return ;
 });
 
-app.get('/', function(req, res, next){
+//Trigger the memoization from the file system right away.
+parseAlbums();
 
-	//Clean up:
+app.get('/', function(){
 
-	// rimraf('/public/')
+});
 
-	var albums = [];
+app.get('/json', function(req, res){
+	res.json(parseAlbums());
+});
 
+app.get('/r', function(req, res, next){
+	res.set({ 'Content-Type': 'text/plain; charset=utf-8' });
 	client.readdir('/website/albums/', function(error, folders){
-
 		if(error) {
 			next(error);
 		} else {
-			// albums = _.map(folders, function(a){
-			// 	return {
-			// 		name: a,
-			// 		art: []
-			// 	}
-			// });
-			console.log("Got folders:", folders);
 			async.map(folders, function(album, cb){
 				client.readdir('/website/albums/'+album, function(error, files){
 					if(error) return cb(error);
@@ -154,9 +125,9 @@ app.get('/', function(req, res, next){
 								name = path.basename(src, path.extname(src));
 							return {
 								name: name,
-								thumbURL: client.thumbnailUrl(src, {size: 'medium'}),
-								src: src,
+								url: client.thumbnailUrl(src, {size: 'xl'})+"&access_token=MqSHzISeN_EAAAAAAAAAAdrtC29XoTviCS7QJFWMtU46d49oogHGzA--b-7b9794",
 								dest: './public/dist/'+album+'/'+filename,
+								thumbURL: client.thumbnailUrl(src, {size: 'l'})+"&access_token=MqSHzISeN_EAAAAAAAAAAdrtC29XoTviCS7QJFWMtU46d49oogHGzA--b-7b9794",
 								thumbDest: './public/dist/'+album+'/'+name+'.thumbnail'+path.extname(src)
 							}
 						})
@@ -170,206 +141,51 @@ app.get('/', function(req, res, next){
 					_.partial(rimraf, './public/dist/'),
 					_.partial(fs.mkdir, './public/dist/'),
 				].concat(_.map(albums, function(a){
+					res.write("Creating album "+a.name+"\n");
 					return _.partial(fs.mkdir, './public/dist/'+a.name);
 				})), function(err){
 					if(err) return next(err);
 
 					// Generate the list of the files to download (pic + thumbnail)
 
-					function downloadThumb(url, dest, cb){
-						console.log("thumb:",url,dest);
+					function download(url, dest, cb){
 						var file = fs.createWriteStream(dest);
 						request(url).pipe(file);
 						file.on('finish', function() {
-							console.log("finish!");
+							res.write("Downloaded "+url+" to "+dest+"\n");
 					    	file.close();
 					    	cb();
 					    });
-					}
-
-					function downloadPic(src, dest, cb) {
-						console.log("Pic:",src,dest);
-						client.readFile(src, function(error, data) {
-							console.log("Pic error:",src,dest,error);
-							if(error) return cb(error);
-						  	fs.writeFile(dest, data, function(error) {
-							    if(error) return cb(error);
-							    console.log("Created "+dest);
-							    cb();
-							}); 
-						});
 					}
 
 					var dl = _.reduce(albums, function(acc, a){
 						
 
 						var thumbs = _.map(a.art, function(p){
-							return _.partial(downloadThumb, p.thumbURL, p.thumbDest);
+							return _.partial(download, p.thumbURL, p.thumbDest);
 						});
 
 						var pics = _.map(a.art, function(p){
-							return _.partial(downloadPic, p.src, p.dest);
+							return _.partial(download, p.url, p.dest);
 						});
 
-						console.log("partials", thumbs, pics);
-
 						return acc.concat(thumbs).concat(pics);
-
-						// acc.concat();
-						// acc.concat(_.map(a.art, function(p){
-						// 	return _.partial(downloadPic, p.src, p.dest);
-						// }));
-						// console.log(acc);
-						// return acc;
 					}, []);
 
 					//Fire in the hole
-					console.log("Downloading: "+dl.length+" files.");
 					async.series(dl, function(error){
 						if(error) return next(error);
-						res.json(albums);
+
+						//Rebuild the albums list
+						parseAlbums.cache = {};
+						parseAlbums();
+						res.end("\n\n\nSuccés! "+dl.length/2 +" images dans "+albums.length+" albums ont étées mises à jour."+"\n");
 					});
-
-					// console.log(dl);
-
-					// _.each(albums, function(a){
-					// 	_.each(a.art, function(p){
-					// 		 var thumb = fs.createWriteStream(p.localThumbPath);
-					// 		 var request = http.get(url, function(response) {
-					// 		    response.pipe(file);
-					// 		    file.on('finish', function() {
-					// 		      file.close();
-					// 		      cb();
-					// 		    });
-					// 		  });
-					// 	});
-					// })
-
-					//All the albums folders are created, download the files
-					// async.parallel() 
 				});
 			});
 		};
 	});	
 });
-
-app.get('/old', function(req, res, next){
-
-	//Clean up:
-
-	// rimraf('/public/')
-
-	var albums = [];
-
-	client.readdir('/website/albums/', function(error, folders){
-
-		if(error) {
-			next(error);
-		} else {
-			// albums = _.map(folders, function(a){
-			// 	return {
-			// 		name: a,
-			// 		art: []
-			// 	}
-			// });
-			console.log("Got folders:", folders);
-			async.map(folders, function(album, cb){
-				client.readdir('/website/albums/'+album, function(error, files){
-					if(error) cb(error);
-					cb(null, {
-						name: album,
-						art: _.map(files, function(filename){
-							var path = '/website/albums/'+album+'/'+filename;
-							return {
-								name: filename,
-								small: client.thumbnailUrl(path, {size: 'medium'}),
-								large: client.thumbnailUrl(path, {size: 'xl'})
-							}
-						})
-					});
-				});
-			}, function(err, albums){
-				if(err) next(err);
-				// console.log("got albums:", albums)
-				// res.json(albums);
-
-				var items = _(albums).map(function(a, index) {
-					return [{
-						name: a.name,
-						odd: index % 2 == 1
-					}].concat(_.map(a.art, function(p){
-						return {
-							name: p.name,
-							albumName: a.name,
-							// uri: p.uri,
-							small: p.small,
-							large: p.large,
-							odd: index % 2 == 1
-						}
-					}))
-				}).flatten(true).value();
-
-				var rows = _.reduce(items, function(acc, item){
-					console.log(acc, item);
-
-					if(acc.length == 2 && _.last(acc).length == 2) {
-						_.last(acc).push({break: true});			
-						_.last(acc).push(item);
-						acc.push([]);
-						return acc;
-					}
-
-					if(acc.length == 3 && _.last(acc).length == 3){
-						_.last(acc).push({
-							news: _(art.news).pluck('Content').map(utils.normalize).value().splice(0,2)
-						});
-						acc.push([]);
-						return acc;			
-					}
-
-					if(_.last(acc).length == 6) {
-						acc.push([]);
-					} 
-
-					_.last(acc).push(item);
-
-					return acc;
-				}, [[]]);
-
-				console.log(rows);
-
-				res.render('home', {
-					rows: rows
-				});
-
-			});
-		};
-	});
-	// return;
-
-	// var albums = _.map(art.albums, function(a){
-	// 	return {
-	// 		name: utils.normalize(a.ALBUM_NAME),
-	// 		text: utils.normalize( (a.ALBUM_TEXT1 || '') + (a.ALBUM_TEXT2 || '')),
-	// 		art: _(art.pictures).filter({PICTURE_ALBUM_ID: a.ALBUM_ID}).map(function(p){
-	// 			return {
-	// 				name: utils.normalize(p.PICTURE_NAME),
-	// 				uri: '/img/art/'+p.PICTURE_ID
-	// 			}
-	// 		}).value()
-	// 	}
-	// }); 
-
-	
-});
-
-
-app.get('/pictures', function(req, res, next){
-
-	res.json(pics());
-
-});
-
 
 http.createServer(app).listen(2000, function(){
 	console.log("HTTP server listening on port 2000");
