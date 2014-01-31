@@ -235,7 +235,7 @@ app.get('/json', function(req, res){
 
 app.get('/r', function(req, res, next){
 	res.set({ 'Content-Type': 'text/plain; charset=utf-8' });
-	loadAlbums(function(){}, end);	
+	loadAlbums(function(){}, res);	
 });
 
 function start(){
