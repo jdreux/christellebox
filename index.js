@@ -76,41 +76,7 @@ app.configure(function(){
 	});
 });
 
-var parseAlbums = _.memoize(function(){
-
-	return _.map(fs.readdirSync('./public/dist/'), function(a) {
-
-		return {
-			name: a,
-			art: _.map(fs.readdirSync('./public/dist/'+a), function(p){
-				if(p.indexOf('.thumbnail.')>-1) return;
-				var name = path.basename(p, path.extname(p));
-				return {	
-					name: name,
-					src: '/dist/'+a+'/'+p,
-					thumbnail: '/dist/'+a+'/'+name+'.thumbnail'+path.extname(p)
-				};
-			})
-		}
-
-	});
-
-	return ;
-});
-
-//Trigger the memoization from the file system right away.
-parseAlbums();
-
-app.get('/', function(){
-
-});
-
-app.get('/json', function(req, res){
-	res.json(parseAlbums());
-});
-
-app.get('/r', function(req, res, next){
-	res.set({ 'Content-Type': 'text/plain; charset=utf-8' });
+var loadAlbums = function(done, res){
 	client.readdir('/website/albums/', function(error, folders){
 		if(error) {
 			next(error);
@@ -180,13 +146,112 @@ app.get('/r', function(req, res, next){
 						parseAlbums.cache = {};
 						parseAlbums();
 						res.end("\n\n\nSuccés! "+dl.length/2 +" images dans "+albums.length+" albums ont étées mises à jour."+"\n");
+						done();
 					});
 				});
 			});
 		};
 	});	
+}
+
+var parseAlbums = _.memoize(function(){
+
+	var as = _.map(fs.readdirSync('./public/dist/'), function(a) {
+
+		return {
+			name: a,
+			art: _(fs.readdirSync('./public/dist/'+a)).map(function(p){
+				if(p.indexOf('.thumbnail.')>-1) return;
+				var name = path.basename(p, path.extname(p));
+				return {	
+					name: name,
+					src: '/dist/'+a+'/'+p,
+					thumbnail: '/dist/'+a+'/'+name+'.thumbnail'+path.extname(p)
+				};
+			}).filter(_.identity).value()
+		}
+
+	});
+
+	console.log(as);
+
+	return as;
 });
 
-http.createServer(app).listen(2000, function(){
-	console.log("HTTP server listening on port 2000");
+//Trigger the memoization from the file system right away.
+parseAlbums();
+
+app.get('/', function(req, res){
+	var items = _(parseAlbums()).map(function(a, index) {
+		return [{
+			name: a.name,
+			odd: index % 2 == 1
+		}].concat(_.map(a.art, function(p){
+			return _.extend(p, {
+				albumName: a.name,
+				odd: index % 2 == 1
+			});
+		}))
+	}).flatten(true).value();
+
+	var rows = _.reduce(items, function(acc, item){
+		console.log(acc, item);
+
+		if(acc.length == 2 && _.last(acc).length == 2) {
+			_.last(acc).push({break: true});			
+			_.last(acc).push(item);
+			acc.push([]);
+			return acc;
+		}
+
+		if(acc.length == 3 && _.last(acc).length == 3){
+			_.last(acc).push({
+				// news: _(art.news).pluck('Content').map(utils.normalize).value().splice(0,2)
+				news: 'Some BS'
+			});
+			acc.push([]);
+			return acc;			
+		}
+
+		if(_.last(acc).length == 6) {
+			acc.push([]);
+		} 
+
+		_.last(acc).push(item);
+
+		return acc;
+	}, [[]]);
+
+	console.log(rows);
+
+	res.render('home', {
+		rows: rows
+	});
 });
+
+app.get('/json', function(req, res){
+	res.json(parseAlbums());
+});
+
+app.get('/r', function(req, res, next){
+	res.set({ 'Content-Type': 'text/plain; charset=utf-8' });
+	loadAlbums(function(){}, end);	
+});
+
+function start(){
+	http.createServer(app).listen(2000, function(){
+		console.log("HTTP server listening on port 2000");
+	});
+}
+
+if(app.get('env') == 'production'){
+	loadAlbums(start, {
+		write: console.log,
+		end: console.log,
+	});
+} else {
+	start();
+}
+
+
+
