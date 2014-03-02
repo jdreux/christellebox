@@ -182,7 +182,8 @@ var parseAlbums = _.memoize(function(){
 parseAlbums();
 
 app.get('/', function(req, res){
-	var items = _(parseAlbums()).map(function(a, index) {
+	var albums = parseAlbums();
+	var items = _(albums).map(function(a, index) {
 		return [{
 			name: a.name,
 			odd: index % 2 == 1
@@ -197,7 +198,7 @@ app.get('/', function(req, res){
 	var rows = _.reduce(items, function(acc, item){
 		console.log(acc, item);
 
-		if(acc.length == 2 && _.last(acc).length == 2) {
+		if(acc.length == 1 && _.last(acc).length == 2) {
 			_.last(acc).push({break: true});			
 			_.last(acc).push(item);
 			acc.push([]);
@@ -225,7 +226,8 @@ app.get('/', function(req, res){
 	console.log(rows);
 
 	res.render('home', {
-		rows: rows
+		rows: rows,
+		albums: albums
 	});
 });
 
