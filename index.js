@@ -195,33 +195,41 @@ app.get('/', function(req, res){
 		}))
 	}).flatten(true).value();
 
-	var rows = _.reduce(items, function(acc, item){
-		console.log(acc, item);
+	var rows = _.reduce(items, function(acc, item, index){
+		// console.log(acc, item);
 
-		if(acc.length == 1 && _.last(acc).length == 2) {
-			_.last(acc).push({break: true});			
-			_.last(acc).push(item);
-			acc.push([]);
-			return acc;
-		}
+		// if(acc.length == 1 && _.last(acc).length == 2) {
+		// 	_.last(acc).push({break: true});			
+		// 	_.last(acc).push(item);
+		// 	acc.push([]);
+		// 	return acc;
+		// }
 
-		if(acc.length == 3 && _.last(acc).length == 3){
-			_.last(acc).push({
-				// news: _(art.news).pluck('Content').map(utils.normalize).value().splice(0,2)
-				news: 'Some BS'
-			});
-			acc.push([]);
-			return acc;			
-		}
+		// if(acc.length == 3 && _.last(acc).length == 3){
+		// 	_.last(acc).push({
+		// 		// news: _(art.news).pluck('Content').map(utils.normalize).value().splice(0,2)
+		// 		news: 'Some BS'
+		// 	});
+		// 	acc.push([]);
+		// 	return acc;			
+		// }
 
-		if(_.last(acc).length == 6) {
-			acc.push([]);
-		} 
+		// if(_.last(acc).length == 6) {
+		// 	acc.push([]);
+		// } 
 
-		_.last(acc).push(item);
+		// if(_.last(acc).length == Math.floor(items.length / 3)){
+		// 	acc.push([]);
+		// }
+
+
+
+		// _.last(acc).push(item);
+
+		acc[index%3].push(item);
 
 		return acc;
-	}, [[]]);
+	}, [[], [], []]);
 
 	console.log(rows);
 

@@ -14,7 +14,7 @@
    ========================================================================== */
 
 body {
-
+    padding: 15px;
 }
 
 header {
@@ -45,11 +45,11 @@ header {
 }
 
 .logo h1 {
-    font-size: 3em;
+    font-size: 2em;
 }
 
 .logo h3 {
-    font-size: 2em;
+    font-size: 1.6em;
     text-align: right;
     color: #999;
 }
@@ -88,25 +88,15 @@ header {
 }
 */
 
-.album {
+a.album {
     text-align: center;
     background-color: #edeff1;
     padding: 5px 10px;   
     border-radius: 4px;
+    margin-bottom: 20px;
+    display: block;
 }
 
-.thumbnail {
-    text-align: center;
-    display: inline-block;
-}
-
-.thumbnail img{
-    /*width: 80%;
-    height: auto;
-    max-height: 180px;*/
-    /*cursor: pointer;*/
-}
-
-.thumbnail span {
-
+a.thumbnail:hover {
+    border-color: #999;
 }

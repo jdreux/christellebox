@@ -25,7 +25,7 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <header class="navbar navbar-static-top" role="banner"> 
+       {{!--  <header class="navbar navbar-static-top" role="banner"> 
           <div class="container">
             <div class="navbar-header">
               <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
@@ -52,8 +52,56 @@
               </ul>
             </nav>
           </div>
-        </header>
-        <div class="main">
+        </header> --}}
+
+        
+        <div class="row">
+
+            <div class="col-sm-3 menu">
+
+                <div class="logo">
+                    <h1>CHRISTELLE DREUX, ARTISTE</h1>
+                    <h3>Nice, France</h3>
+
+                    <p><b>Contact</b></p>
+
+                    <p><b>Expositions</b></p>
+
+                    {{#each albums}}
+                        <a href="#{{name}}">{{name}}</a> |
+                    {{/each}}
+
+                </div>
+
+            </div>
+
+            {{#each rows}}
+
+            <div class="col-sm-3">
+
+                {{#each this}}
+
+                {{#if thumbnail}}
+                <a href="{{src}}" title="{{name}}" class="thumbnail" data-gallery>
+                    <img src="{{thumbnail}}" alt="{{name}}">
+                    {{!-- <span>{{name}}</span> --}}
+                </a>
+                {{else}}
+                <a class="album" name="{{name}}"><span>{{name}}</span></a>
+                {{/if}}
+
+                {{/each}}
+
+            </div>
+
+            {{/each}}
+
+
+        </div>
+
+
+
+        {{!-- <div class="main">
         {{#each rows}}
             <div class="row art-row">
             {{#each this}}
@@ -94,7 +142,7 @@
             {{/each}}
             </div>  
         {{/each}} 
-        </div>
+        </div> --}}
 
         <!-- The Bootstrap Image Gallery lightbox, should be a child element of the document body -->
         <div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls">
