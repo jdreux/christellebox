@@ -49,7 +49,8 @@ var express = require('express'),
 		}
 	};
 
-
+app.set('env', process.env.NODE_ENV);
+app.set('port', process.env.PORT || 2000);
 
 app.configure(function(){
 
@@ -212,8 +213,8 @@ app.get('/r', function(req, res, next){
 });
 
 function start(){
-	http.createServer(app).listen(2000, function(){
-		console.log("HTTP server listening on port 2000");
+	http.createServer(app).listen(app.get('port'), function(){
+		console.log("HTTP server listening on port "+app.get('port'));
 	});
 }
 
