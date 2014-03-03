@@ -1,0 +1,1 @@
+require('forky')(__dirname + '/app.js');

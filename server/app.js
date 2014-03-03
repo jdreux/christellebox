@@ -14,7 +14,6 @@ var express = require('express'),
 	    secret: "6kzlbdpgo6xdmrq",
 	    token: "MqSHzISeN_EAAAAAAAAAAdrtC29XoTviCS7QJFWMtU46d49oogHGzA--b-7b9794"
 	}),
-	art = require('./old/socatoa_christelledreuxcom.js'),
 	app = express(),
 	hbs = exphbs.create({
         extname: '.hbs',
@@ -63,8 +62,8 @@ app.configure(function(){
 
 	//app.use(express.logger());
 	app.use(app.router);
-	app.use(express.static(path.join(__dirname,'./public')));
-	app.use(express.static(path.join(__dirname,'./public')));
+	app.use(express.static(path.join(__dirname,'../public')));
+	app.use(express.static(path.join(__dirname,'../public')));
 
 	app.use(function(req, res){
 		res.status(404).sendfile('./public/404.html');
@@ -172,9 +171,6 @@ var parseAlbums = _.memoize(function(){
 		}
 
 	});
-
-	console.log(as);
-
 	return as;
 });
 
@@ -196,42 +192,9 @@ app.get('/', function(req, res){
 	}).flatten(true).value();
 
 	var rows = _.reduce(items, function(acc, item, index){
-		// console.log(acc, item);
-
-		// if(acc.length == 1 && _.last(acc).length == 2) {
-		// 	_.last(acc).push({break: true});			
-		// 	_.last(acc).push(item);
-		// 	acc.push([]);
-		// 	return acc;
-		// }
-
-		// if(acc.length == 3 && _.last(acc).length == 3){
-		// 	_.last(acc).push({
-		// 		// news: _(art.news).pluck('Content').map(utils.normalize).value().splice(0,2)
-		// 		news: 'Some BS'
-		// 	});
-		// 	acc.push([]);
-		// 	return acc;			
-		// }
-
-		// if(_.last(acc).length == 6) {
-		// 	acc.push([]);
-		// } 
-
-		// if(_.last(acc).length == Math.floor(items.length / 3)){
-		// 	acc.push([]);
-		// }
-
-
-
-		// _.last(acc).push(item);
-
 		acc[index%3].push(item);
-
 		return acc;
 	}, [[], [], []]);
-
-	console.log(rows);
 
 	res.render('home', {
 		rows: rows,
