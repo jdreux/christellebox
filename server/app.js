@@ -156,8 +156,9 @@ var loadAlbums = function(done, res){
 
 var parseAlbums = _.memoize(function(){
 
-	var as = _.map(fs.readdirSync('./public/dist/'), function(a) {
-
+	var as = _(fs.readdirSync('./public/dist/')).filter(function(path){
+		return fs.statSync('./public/dist/'+path).isDirectory();
+	}).map(function(a) {
 		return {
 			name: a,
 			art: _(fs.readdirSync('./public/dist/'+a)).map(function(p){
@@ -171,7 +172,7 @@ var parseAlbums = _.memoize(function(){
 			}).filter(_.identity).value()
 		}
 
-	});
+	}).value();
 	return as;
 });
 
@@ -180,26 +181,35 @@ parseAlbums();
 
 app.get('/', function(req, res){
 	var albums = parseAlbums();
-	var items = _(albums).map(function(a, index) {
-		return [{
-			name: a.name,
-			odd: index % 2 == 1
-		}].concat(_.map(a.art, function(p){
-			return _.extend(p, {
-				albumName: a.name,
-				odd: index % 2 == 1
-			});
-		}))
-	}).flatten(true).value();
+	// var items = _(albums).map(function(a, index) {
+	// 	return [{
+	// 		name: a.name,
+	// 		odd: index % 2 == 1
+	// 	}].concat(_.map(a.art, function(p){
+	// 		return _.extend(p, {
+	// 			albumName: a.name,
+	// 			odd: index % 2 == 1
+	// 		});
+	// 	}))
+	// }).flatten(true).value();
 
-	var rows = _.reduce(items, function(acc, item, index){
-		acc[index%3].push(item);
-		return acc;
-	}, [[], [], []]);
+	// var rows = _.reduce(items, function(acc, item, index){
+	// 	acc[index%3].push(item);
+	// 	return acc;
+	// }, [[], [], []]);
+
+	console.log(albums);
 
 	res.render('home', {
-		rows: rows,
-		albums: albums
+		// rows: rows,
+		albums: _.map(albums, function(a){
+			return _.extend(a, {
+				items: _.reduce(a.art, function(acc, item, index){
+					acc[index%3].push(item);
+					return acc;
+				}, [[], [], []])
+			})
+		})
 	});
 });
 
