@@ -31,32 +31,37 @@
             <div class="col-sm-3 menu">
 
                 <div class="logo">
-                    <h1>CHRISTELLE DREUX, ARTISTE</h1>
-                    <h3>Nice, France</h3>
-
-                    <ul>
-
-                    </ul>
-
-                    <p><b>Contact</b></p>
-
-                    <p><b>Expositions</b></p>
-
-                    {{#each albums}}
-                        <a href="#{{name}}">{{name}}</a> |
-                    {{/each}}
-
+                    <h1>CHRISTELLE DREUX</h1>
                 </div>
 
+                <ul>
+                    {{#each albums}}
+                    
+                    <li><a href="#{{name}}">{{name}}</a></li>
+                    
+                    {{/each}}
+                </ul>
+
+                <div class="footer">
+                    <a href="#">
+                        contact
+                    </a>
+
+                    <a href="#">
+                        expositions
+                    </a>
+
+
+                </div>
             </div>
+
             <div class="col-sm-3"></div>
-            
 
             <div class="col-sm-9">
                 {{#each albums}}
                 <div class="row">
                     <div class="col-sm-12">
-                        <a class="album" name="{{name}}"><span>{{name}}</span></a>
+                        <a class="album" name="{{name}}"><h2>{{name}}</h2></a>
                     </div>
                 </div>  
                 <div class="row">
@@ -65,8 +70,8 @@
                     <div class="col-sm-4">
                     {{#each this}}
 
-                        <a href="{{src}}" title="{{name}}" class="thumbnail" data-gallery>
-                            <img src="{{thumbnail}}" alt="{{name}}">
+                        <a href="{{src}}" title="{{name}}" class="art-thumbnail" data-gallery>
+                            <img src="" alt="{{name}}" data-src="{{thumbnail}}"/>
                             <p>{{name}}</p>
                         </a>                        
 
@@ -77,29 +82,6 @@
 
                 {{/each}}
             </div>
-        
-
-            {{!-- {{#each rows}}
-
-            <div class="col-sm-3">
-
-                {{#each this}}
-
-                {{#if thumbnail}}
-                <a href="{{src}}" title="{{name}}" class="thumbnail" data-gallery>
-                    <img src="{{thumbnail}}" alt="{{name}}">
-                </a>
-                {{else}}
-                
-                {{/if}}
-
-                {{/each}}
-
-            </div>
-
-            {{/each}} --}}
-
-
         </div>
 
         <!-- The Bootstrap Image Gallery lightbox, should be a child element of the document body -->
@@ -141,13 +123,17 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
         <script src="js/vendor/jquery.blueimp-gallery.min.js"></script>
+        <script src="js/vendor/jquery.unveil.min.js"></script>
         <script src="js/vendor/bootstrap.js"></script>
         <script src="js/vendor/bootstrap-image-gallery.min.js"></script>
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
         <script>
-            $('#blueimp-gallery').data('useBootstrapModal', false);
-            $('#blueimp-gallery').toggleClass('blueimp-gallery-controls', true);
+            $(function(){
+                $('#blueimp-gallery').data('useBootstrapModal', false);
+                $('#blueimp-gallery').toggleClass('blueimp-gallery-controls', true);
+                $("img").unveil();
+            });
         </script>
     </body>
 </html>

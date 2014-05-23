@@ -14,21 +14,65 @@
    ========================================================================== */
 
 body {
-    padding: 15px;
+    padding: 5px;
 }
 
 .menu {
     position: fixed;
+    height: 100%;
 }
 
 @media (max-width: 767px) {
-
     .menu {
         position: static;
     }
-
-
 }
+
+.menu .logo {
+    border-top: 5px solid #16a085;
+}
+
+.menu .logo h1 {
+    font-size: 2em;
+    margin: 0;
+}
+
+.menu .logo h3 {
+    font-size: 1.6em;
+    text-align: right;
+    color: #999;
+}
+
+
+.menu ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.menu ul li {
+    border-top: 1px solid #16a085;
+    padding: 5px 0;
+}
+
+.menu ul li a {
+    color: #000;
+    font-weight: lighter;
+    font-size: 0.9em;
+}
+
+.menu .footer {
+    position: absolute;
+    bottom: 0px;
+    padding-bottom: 15px;
+}
+
+.menu .footer a{
+    text-transform: uppercase;
+    font-weight: lighter;
+    display: block;
+    color: #000;
+}
+
 
 .main {
     padding: 15px;
@@ -44,26 +88,6 @@ body {
 .art-row>div {
     /*height: 200px;*/
     overflow: hidden;
-}
-
-.logo {
-    background-color: #edeff1;
-    padding: 5px 10px;   
-    border-radius: 4px;
-}
-
-.logo h1 {
-    font-size: 2em;
-}
-
-.logo h3 {
-    font-size: 1.6em;
-    text-align: right;
-    color: #999;
-}
-
-.grey {
-    background-color: #ccc;
 }
 
 .art-frame {
@@ -98,28 +122,48 @@ body {
 
 a.album {
     text-align: center;
-    background-color: #edeff1;
+    /*background-color: #edeff1;*/
     padding: 5px 10px;   
-    border-radius: 4px;
+    /*border-radius: 4px;*/
     margin-bottom: 20px;
     text-transform: uppercase;
     display: block;
-    color: rgb(52, 73, 94);
+    /*color: rgb(52, 73, 94);*/
+    border-top: 5px solid #34495e;
 }
 
-a.thumbnail {
-    position: relative;
+a.album h2 {
+    color: black;
+    font-weight: lighter;
 }
 
-a.thumbnail p {
-    position: absolute;
+
+a.art-thumbnail {
+    /*position: relative;*/
+    border-bottom: 1px solid #16a085;
+    margin: 30px 0px 0px;
+    display: block;
+    width: 100%;
+}
+
+a.art-thumbnail img{
+    width: 100%;
+    height: auto;
+}
+
+a.art-thumbnail p {
+    /*position: absolute;
     bottom: 0px;
     background-color: #fff;
-    opacity: 0.7;
+    opacity: 0.7;*/
     width: 100%;
     text-align: center;
+    color: black;
+    font-weight: lighter;
+    font-size: 0.8em;
+    margin: 10px 0;
 }
 
 a.thumbnail:hover {
-    border-color: #999;
+    /*border-color: #999;*/
 }
