@@ -1,0 +1,103 @@
+// @import 'compass';
+@import 'lib/normalize';
+@import 'lib/bootstrap';
+@import 'lib/bootstrap-theme';
+@import 'lib/flat-ui';
+@import 'lib/blueimp-gallery';
+@import 'modules/variables';
+@import 'modules/misc';
+
+
+body {
+    padding: 5px;
+}
+
+.menu {
+    position: fixed;
+    height: 100%;
+
+    @media (max-width: 767px) {
+    	position: static;
+    }
+
+    .logo {
+	    border-top: 5px solid $color-primary;
+
+	    h1 {
+		    font-size: 2em;
+		    margin: 0;
+		}
+
+		h3 {
+		    font-size: 1.6em;
+		    text-align: right;
+		    color: #999;
+		}
+	}
+
+	ul {
+	    list-style: none;
+	    padding-left: 0;
+
+	    li {
+		    border-top: 1px solid $color-secondary;
+		    padding: 5px 0;
+
+		    a {
+			    color: #000;
+			    font-weight: lighter;
+			    font-size: 0.9em;
+			}
+		}
+	}
+
+	.footer {
+	    position: absolute;
+	    bottom: 0px;
+	    padding-bottom: 15px;
+
+	    a{
+		    text-transform: uppercase;
+		    font-weight: lighter;
+		    display: block;
+		    color: #000;
+		}
+	}
+
+
+}
+
+a.album {
+    text-align: center;
+    padding: 5px 10px;   
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    display: block;
+    border-top: 5px solid $color-secondary;
+
+    h2 {
+	    color: black;
+	    font-weight: lighter;
+	}
+}
+
+a.art-thumbnail {
+    border-bottom: 1px solid $color-primary;
+    margin: 30px 0px 0px;
+    display: block;
+    width: 100%;
+
+    img{
+	    width: 100%;
+	    height: auto;
+	}
+
+	p {
+	    width: 100%;
+	    text-align: center;
+	    color: black;
+	    font-weight: lighter;
+	    font-size: 0.8em;
+	    margin: 10px 0;
+	}
+}
