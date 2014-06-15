@@ -35,7 +35,7 @@ var express = require('express'),
     }),
 	utils = {
 		normalize: function(str) {
-				
+
 			return str
 				.replace(/\&eacute;/g, 'é')
 				.replace(/\&#39;/g, '\'')
@@ -125,7 +125,7 @@ var loadAlbums = function(done, res){
 					}
 
 					var dl = _.reduce(albums, function(acc, a){
-						
+
 
 						var thumbs = _.map(a.art, function(p){
 							return _.partial(download, p.thumbURL, p.thumbDest);
@@ -151,7 +151,7 @@ var loadAlbums = function(done, res){
 				});
 			});
 		};
-	});	
+	});
 }
 
 var parseAlbums = _.memoize(function(){
@@ -164,7 +164,7 @@ var parseAlbums = _.memoize(function(){
 			art: _(fs.readdirSync('./public/dist/'+a)).map(function(p){
 				if(p.indexOf('.thumbnail.')>-1) return;
 				var name = path.basename(p, path.extname(p));
-				return {	
+				return {
 					name: name,
 					src: '/dist/'+a+'/'+p,
 					thumbnail: '/dist/'+a+'/'+name+'.thumbnail'+path.extname(p)
@@ -181,27 +181,7 @@ parseAlbums();
 
 app.get('/', function(req, res){
 	var albums = parseAlbums();
-	// var items = _(albums).map(function(a, index) {
-	// 	return [{
-	// 		name: a.name,
-	// 		odd: index % 2 == 1
-	// 	}].concat(_.map(a.art, function(p){
-	// 		return _.extend(p, {
-	// 			albumName: a.name,
-	// 			odd: index % 2 == 1
-	// 		});
-	// 	}))
-	// }).flatten(true).value();
-
-	// var rows = _.reduce(items, function(acc, item, index){
-	// 	acc[index%3].push(item);
-	// 	return acc;
-	// }, [[], [], []]);
-
-	console.log(albums);
-
 	res.render('home', {
-		// rows: rows,
 		albums: _.map(albums, function(a){
 			return _.extend(a, {
 				items: _.reduce(a.art, function(acc, item, index){
@@ -219,7 +199,7 @@ app.get('/json', function(req, res){
 
 app.get('/r', function(req, res, next){
 	res.set({ 'Content-Type': 'text/plain; charset=utf-8' });
-	loadAlbums(function(){}, res);	
+	loadAlbums(function(){}, res);
 });
 
 function start(){
@@ -236,6 +216,3 @@ if(app.get('env') == 'production'){
 } else {
 	start();
 }
-
-
-

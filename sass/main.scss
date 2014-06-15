@@ -52,6 +52,11 @@ body {
 	}
 
 	.footer {
+
+      @media (max-width: 767px) {
+          position: initial;
+      }
+
 	    position: absolute;
 	    bottom: 0px;
 	    padding-bottom: 15px;
@@ -67,18 +72,25 @@ body {
 
 }
 
-a.album {
+a.album, a.expo {
     text-align: center;
-    padding: 5px 10px;   
+    padding: 5px 10px;
     margin-bottom: 20px;
     text-transform: uppercase;
     display: block;
-    border-top: 5px solid $color-secondary;
 
     h2 {
 	    color: black;
 	    font-weight: lighter;
 	}
+}
+
+a.album {
+  border-top: 5px solid $color-secondary;
+}
+
+a.expo {
+  border-top: 5px solid $color-primary;
 }
 
 a.art-thumbnail {
@@ -100,4 +112,14 @@ a.art-thumbnail {
 	    font-size: 0.8em;
 	    margin: 10px 0;
 	}
+}
+
+p.expo {
+  padding: 30px;
+  color: black;
+  font-weight: lighter;
+}
+
+.spacer {
+  margin: 50px;
 }

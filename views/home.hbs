@@ -12,6 +12,7 @@
 
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
         <link rel="stylesheet" href="css/main.css">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
         <script src="js/vendor/modernizr-2.6.2.min.js"></script>
     </head>
     <body>
@@ -19,7 +20,7 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        
+
         <div class="row">
 
             <div class="col-sm-3 menu">
@@ -30,34 +31,60 @@
 
                 <ul>
                     {{#each albums}}
-                    
+
                     <li><a href="#{{name}}">{{name}}</a></li>
-                    
+
                     {{/each}}
                 </ul>
 
                 <div class="footer">
-                    <a href="#">
-                        contact
-                    </a>
 
-                    <a href="#">
+                    <a href="#expositions">
                         expositions
                     </a>
 
-
+                    <a href="#contact">
+                        contact
+                    </a>
                 </div>
             </div>
 
             <div class="col-sm-3"></div>
 
             <div class="col-sm-9">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a class="expo" name="{{name}}"><h2>Expo: Les Voiles d'Antibes</h2></a>
+                    </div>
+                </div>
+                <div class="row">
+                  <p class="expo">
+                    Les Voiles d'Antibes, 4-8 Juin,le grand rdv du yachting de tradition: j'y expose mes bleus,esplanade du chantier naval Opéra, Port Vauban, proche du Quai des Milliardaires.
+                  </p>
+                </div>
+
+                <div class="row">
+                  <div class="col-xs-4 text-center">
+                    <a href="#"><i class="fa fa-map-marker fa-2x"></i></a>
+                  </div>
+                  <div class="col-xs-4  text-center">
+                    <a href="#"><i class="fa fa-facebook fa-2x"></i></a>
+                  </div>
+                  <div class="col-xs-4  text-center">
+                    <a href="#"><i class="fa fa-twitter fa-2x"></i></a>
+                  </div>
+                </div>
+
+                <div class="spacer"></div>
+
+
                 {{#each albums}}
                 <div class="row">
                     <div class="col-sm-12">
                         <a class="album" name="{{name}}"><h2>{{name}}</h2></a>
                     </div>
-                </div>  
+                </div>
                 <div class="row">
 
                     {{#each items}}
@@ -67,14 +94,70 @@
                         <a href="{{src}}" title="{{name}}" class="art-thumbnail" data-gallery>
                             <img src="" alt="{{name}}" data-src="{{thumbnail}}"/>
                             <p>{{name}}</p>
-                        </a>                        
+                        </a>
 
                     {{/each}}
                     </div>
                     {{/each}}
                 </div>
+                <div class="spacer"></div>
 
                 {{/each}}
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a class="expo" name="expositions"><h2>Expositions</h2></a>
+                    </div>
+                </div>
+                <div class="row">
+                  <p class="expo">
+                    Traces & Empreintes,La Vieille Forge, Saint Paul, avec 2 invités Philippe Bellissent et Chantal Dachez. Du 17 au 30 mai 2014.
+                  </p>
+                </div>
+
+                <div class="row">
+                  <p class="expo">
+                    Couleurs de Printemps, Saint Paul de Vence, La Vieille Forge. Avril 2014
+                  </p>
+                </div>
+
+                <div class="row">
+                  <p class="expo">
+                    Le Carré au Cercle, Saint Paul de Vence,La Vieille Forge. Ouvert en fin de semaine en janvier, février et mars 2014.
+                  </p>
+                </div>
+
+                <div class="row">
+                  <p class="expo">
+                    La Menuiserie,Nice,centre d'art, Speed Arting, décembre 2013
+                  </p>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a class="expo" name="contact"><h2>Contact</h2></a>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="row">
+                  <div class="col-xs-4 text-center">
+                    <a href="#"><i class="fa fa-envelope fa-2x"></i></a>
+                  </div>
+                  <div class="col-xs-4  text-center">
+                    <a href="#"><i class="fa fa-facebook fa-2x"></i></a>
+                  </div>
+                  <div class="col-xs-4  text-center">
+                    <a href="#"><i class="fa fa-twitter fa-2x"></i></a>
+                  </div>
+                </div>
+
+                <div class="spacer"></div>
+                <div class="spacer"></div>
+                <div class="spacer"></div>
+
+
             </div>
         </div>
 
