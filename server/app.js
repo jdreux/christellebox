@@ -10,9 +10,7 @@ var express = require('express'),
 	request = require('request'),
 	Dropbox = require("dropbox"),
 	client = new Dropbox.Client({
-	    key: "do4maj0zi41t4jb",
-	    secret: "6kzlbdpgo6xdmrq",
-	    token: "MqSHzISeN_EAAAAAAAAAAdrtC29XoTviCS7QJFWMtU46d49oogHGzA--b-7b9794"
+	    key: "l5inr16mi6dwj2h"
 	}),
 	app = express(),
 	hbs = exphbs.create({
@@ -56,10 +54,9 @@ app.configure(function(){
 
 	app.engine('.hbs', hbs.engine);
 
-    app.set('view engine', '.hbs');
+  app.set('view engine', '.hbs');
 
-    app.use(express.compress());
-
+  app.use(express.compress());
 
 	//app.use(express.logger());
 	app.use(app.router);
@@ -179,6 +176,12 @@ var parseAlbums = _.memoize(function(){
 //Trigger the memoization from the file system right away.
 parseAlbums();
 
+function loadExpos(){
+	client.readFile('/website/expositions.csv', function(err, data){
+		console.log("Got data", err, data);
+	});
+}
+
 app.get('/', function(req, res){
 	var albums = parseAlbums();
 	res.render('home', {
@@ -200,6 +203,10 @@ app.get('/json', function(req, res){
 app.get('/r', function(req, res, next){
 	res.set({ 'Content-Type': 'text/plain; charset=utf-8' });
 	loadAlbums(function(){}, res);
+});
+
+app.get('/re', function(req, res){
+	loadExpos();
 });
 
 function start(){
