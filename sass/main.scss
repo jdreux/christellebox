@@ -66,7 +66,7 @@ body {
 		    font-weight: lighter;
 		    display: block;
 		    color: #000;
-		}
+		  }
 	}
 
 
@@ -90,7 +90,7 @@ a.album {
 }
 
 a.expo {
-  border-top: 5px solid $color-primary;
+  border-top: 5px solid $color-tertiary;
 }
 
 a.art-thumbnail {
@@ -122,4 +122,10 @@ p.expo {
 
 .spacer {
   margin: 50px;
+}
+
+div.copyright {
+  font-weight: lighter;
+  font-size: 0.8em;
+  color: #999;
 }

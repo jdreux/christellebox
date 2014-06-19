@@ -8,9 +8,19 @@ var express = require('express'),
 	exphbs  = require('express3-handlebars'),
 	rimraf = require('rimraf'),
 	request = require('request'),
+	xlsx = require('xlsx'),
 	Dropbox = require("dropbox"),
+	secrets = require('./secrets'),
+	config = {
+		distDir: './public/dist/',
+		albumsDistDir: './public/dist/albums/',
+		publicAlbumsDir: './dist/albums/',
+		expositionsPath: './public/dist/expositions.xlsx',
+	},
 	client = new Dropbox.Client({
-	    key: "l5inr16mi6dwj2h"
+	    key: "l5inr16mi6dwj2h",
+			secret: secrets.dropbox.secret,
+			token:  secrets.dropbox.token
 	}),
 	app = express(),
 	hbs = exphbs.create({
@@ -73,7 +83,7 @@ app.configure(function(){
 	});
 });
 
-var loadAlbums = function(done, res){
+var loadAlbums = function(done, res, next){
 	client.readdir('/website/albums/', function(error, folders){
 		if(error) {
 			next(error);
@@ -88,10 +98,10 @@ var loadAlbums = function(done, res){
 								name = path.basename(src, path.extname(src));
 							return {
 								name: name,
-								url: client.thumbnailUrl(src, {size: 'xl'})+"&access_token=MqSHzISeN_EAAAAAAAAAAdrtC29XoTviCS7QJFWMtU46d49oogHGzA--b-7b9794",
-								dest: './public/dist/'+album+'/'+filename,
-								thumbURL: client.thumbnailUrl(src, {size: 'l'})+"&access_token=MqSHzISeN_EAAAAAAAAAAdrtC29XoTviCS7QJFWMtU46d49oogHGzA--b-7b9794",
-								thumbDest: './public/dist/'+album+'/'+name+'.thumbnail'+path.extname(src)
+								url: client.thumbnailUrl(src, {size: 'xl'})+"&access_token="+secrets.dropbox.token,
+								dest: config.albumsDistDir+album+'/'+filename,
+								thumbURL: client.thumbnailUrl(src, {size: 'l'})+"&access_token="+secrets.dropbox.token,
+								thumbDest: config.albumsDistDir+album+'/'+name+'.thumbnail'+path.extname(src)
 							}
 						})
 					});
@@ -101,11 +111,12 @@ var loadAlbums = function(done, res){
 
 				//Remove old dist content, create new albums.
 				async.series([
-					_.partial(rimraf, './public/dist/'),
-					_.partial(fs.mkdir, './public/dist/'),
+					_.partial(rimraf, config.distDir),
+					_.partial(fs.mkdir, config.distDir),
+					_.partial(fs.mkdir, config.albumsDistDir),
 				].concat(_.map(albums, function(a){
 					res.write("Creating album "+a.name+"\n");
-					return _.partial(fs.mkdir, './public/dist/'+a.name);
+					return _.partial(fs.mkdir, config.albumsDistDir+a.name);
 				})), function(err){
 					if(err) return next(err);
 
@@ -153,18 +164,18 @@ var loadAlbums = function(done, res){
 
 var parseAlbums = _.memoize(function(){
 
-	var as = _(fs.readdirSync('./public/dist/')).filter(function(path){
-		return fs.statSync('./public/dist/'+path).isDirectory();
+	var as = _(fs.readdirSync(config.albumsDistDir)).filter(function(path){
+		return fs.statSync(config.albumsDistDir+path).isDirectory();
 	}).map(function(a) {
 		return {
 			name: a,
-			art: _(fs.readdirSync('./public/dist/'+a)).map(function(p){
+			art: _(fs.readdirSync(config.albumsDistDir+a)).map(function(p){
 				if(p.indexOf('.thumbnail.')>-1) return;
 				var name = path.basename(p, path.extname(p));
 				return {
 					name: name,
-					src: '/dist/'+a+'/'+p,
-					thumbnail: '/dist/'+a+'/'+name+'.thumbnail'+path.extname(p)
+					src: config.publicAlbumsDir+a+'/'+p,
+					thumbnail: config.publicAlbumsDir+a+'/'+name+'.thumbnail'+path.extname(p)
 				};
 			}).filter(_.identity).value()
 		}
@@ -173,18 +184,41 @@ var parseAlbums = _.memoize(function(){
 	return as;
 });
 
-//Trigger the memoization from the file system right away.
-parseAlbums();
+function loadExpos(cb){
 
-function loadExpos(){
-	client.readFile('/website/expositions.csv', function(err, data){
-		console.log("Got data", err, data);
+	var file = fs.createWriteStream(config.expositionsPath);
+	request('https://dl.dropbox.com/s/6xq2iykbsqjf7rn/expositions.xlsx')
+		.pipe(file);
+
+	file.on('finish', function(){
+		cb();
 	});
 }
 
+var parseExpos = _.memoize(function(){
+	var workbook = xlsx.readFile(config.expositionsPath);
+	var data = xlsx.utils.sheet_to_json(workbook.Sheets.Sheet1, {header:1})
+	return _.map(_.rest(data), function(row){
+		return {
+			name: row[0],
+			description: row[1],
+			featured: row[2].toLowerCase() == 'oui',
+			links: {
+				maps: row[3],
+				facebook: row[4],
+				twitter: row[5]
+			}
+		}
+	});
+});
+
 app.get('/', function(req, res){
-	var albums = parseAlbums();
+	var albums = parseAlbums(),
+			expos = parseExpos();
+	console.log("Expos:", expos);
 	res.render('home', {
+		featuredExpos: [_.find(expos, {featured: true})],
+		expos: _.filter(expos, {featured: false}),
 		albums: _.map(albums, function(a){
 			return _.extend(a, {
 				items: _.reduce(a.art, function(acc, item, index){
@@ -202,11 +236,13 @@ app.get('/json', function(req, res){
 
 app.get('/r', function(req, res, next){
 	res.set({ 'Content-Type': 'text/plain; charset=utf-8' });
-	loadAlbums(function(){}, res);
+	loadAlbums(function(){}, res, next);
 });
 
 app.get('/re', function(req, res){
-	loadExpos();
+	loadExpos(function(){
+		res.end('expos loaded');
+	});
 });
 
 function start(){
@@ -216,10 +252,20 @@ function start(){
 }
 
 if(app.get('env') == 'production'){
-	loadAlbums(start, {
+	loadAlbums(function(){
+		loadExpos(function(){
+			parseExpos();
+			start();
+		})
+	}, {
 		write: console.log,
 		end: console.log,
+	}, function(err){
+		console.error("an error has occured:", err);
 	});
 } else {
+	//Trigger the memoization from the file system right away.
+	parseAlbums();
+	parseExpos();
 	start();
 }
