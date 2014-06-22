@@ -21,7 +21,9 @@
     "async": "~0.2.10",
     "rimraf": "~2.2.6",
     "request": "~2.33.0",
-    "q": "~1.0.1"
+    "q": "~1.0.1",
+    "lockfile": "~0.4.2",
+    "mkdirp": "~0.5.0"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
