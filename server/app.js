@@ -13,7 +13,6 @@ var express = require('express'),
 	request = require('request'),
 	xlsx = require('xlsx'),
 	Dropbox = require("dropbox"),
-	secrets = require('./secrets'),
 	config = {
 		distDir: './public/dist/',
 		albumsDistDir: './public/dist/albums/',
@@ -59,6 +58,21 @@ var express = require('express'),
 				.replace(/\&quot;/g, '"')
 		}
 	};
+
+var secrets;
+
+try {
+	secrets = require('./secrets');
+} catch(err){
+	//Not available, use params instead
+	secrets = {
+		dropbox: {
+			secret: process.env.DROPBOX_SECRET,
+			token: process.env.DROPBOX_TOKEN
+		}
+	};
+}
+
 
 app.set('env', process.env.NODE_ENV);
 app.set('port', process.env.PORT || 2000);
