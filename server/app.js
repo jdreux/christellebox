@@ -152,11 +152,12 @@ var getExpos = function(cb){
 	file.on('finish', function(){
 		var workbook = xlsx.readFile(config.expositionsPath);
 		var data = xlsx.utils.sheet_to_json(workbook.Sheets.Sheet1, {header:1});
+		console.log("Got data:", data);
 		var expos = _.map(_.rest(data), function(row){
 			return {
 				name: row[0],
 				description: row[1],
-				featured: row[2].toLowerCase() == 'oui',
+				featured: (row[2] || '').toLowerCase() == 'oui',
 				links: {
 					maps: row[3],
 					facebook: row[4],
@@ -205,6 +206,7 @@ async.parallel(
 		if(err) throw err;
 		albums = data[0];
 		expos = data[1];
+		console.info("Loaded %d albums and %d exhibitions.", albums.length, expos.length);
 		http.createServer(app).listen(app.get('port'), function(){
 			console.info("HTTP server listening on port "+app.get('port'));
 		});

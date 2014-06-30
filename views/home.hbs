@@ -26,7 +26,7 @@
             <div class="col-sm-3 menu">
 
                 <div class="logo">
-                    <h1>CHRISTELLE DREUX</h1>
+                    <h1>Christelle Dreux</h1>
                 </div>
 
                 <ul>
@@ -65,15 +65,21 @@
                 </div>
 
                 <div class="row">
+                  {{#if links.maps}}
                   <div class="col-xs-4 text-center">
-                    <a href="#"><i class="fa fa-map-marker fa-2x"></i></a>
+                    <a href="{{links.maps}}" target="blank"><i class="fa fa-map-marker fa-2x"></i></a>
                   </div>
+                  {{/if}}
+                  {{#if links.facebook}}
                   <div class="col-xs-4  text-center">
-                    <a href="#"><i class="fa fa-facebook fa-2x"></i></a>
+                    <a href="{{links.facebook}}" target="blank"><i class="fa fa-facebook fa-2x"></i></a>
                   </div>
+                  {{/if}}
+                  {{#if links.twitter}}
                   <div class="col-xs-4  text-center">
-                    <a href="#"><i class="fa fa-twitter fa-2x"></i></a>
+                    <a href="{{links.twitter}}" target="blank"><i class="fa fa-twitter fa-2x"></i></a>
                   </div>
+                  {{/if}}
                 </div>
 
                 <div class="spacer"></div>
