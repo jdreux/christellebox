@@ -83,9 +83,10 @@ app.configure(function(){
 });
 
 app.get('/', function(req, res){
+	console.log("render:", _.reject(expos, {featured: true}))
 	res.render('home', {
 		featuredExpos: [_.find(expos, {featured: true})],
-		expos: _.filter(expos, {featured: false}),
+		expos: _.reject(expos, {featured: true}),
 		albums: _.map(albums, function(a){
 			return _.extend(a, {
 				items: _.reduce(a.art, function(acc, item, index){

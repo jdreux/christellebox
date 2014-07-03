@@ -104,29 +104,13 @@
               <a class="expo" name="expositions"><h2>Expositions</h2></a>
             </div>
           </div>
+          {{#each expos}}
           <div class="row">
             <p class="expo">
-              Traces & Empreintes,La Vieille Forge, Saint Paul, avec 2 invités Philippe Bellissent et Chantal Dachez. Du 17 au 30 mai 2014.
+              <strong>{{name}}</strong> {{description}}
             </p>
           </div>
-
-          <div class="row">
-            <p class="expo">
-              Couleurs de Printemps, Saint Paul de Vence, La Vieille Forge. Avril 2014
-            </p>
-          </div>
-
-          <div class="row">
-            <p class="expo">
-              Le Carré au Cercle, Saint Paul de Vence,La Vieille Forge. Ouvert en fin de semaine en janvier, février et mars 2014.
-            </p>
-          </div>
-
-          <div class="row">
-            <p class="expo">
-              La Menuiserie,Nice,centre d'art, Speed Arting, décembre 2013
-            </p>
-          </div>
+          {{/each}}
 
           <div class="row">
             <div class="col-sm-12">
