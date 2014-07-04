@@ -68,7 +68,7 @@ app.configure(function(){
 
   app.use(express.compress());
 
-	app.use(express.logger());
+	// app.use(express.logger());
 	app.use(express.static(path.join(__dirname,'../public')));
 	app.use(app.router);
 
@@ -83,7 +83,6 @@ app.configure(function(){
 });
 
 app.get('/', function(req, res){
-	console.log("render:", _.reject(expos, {featured: true}))
 	res.render('home', {
 		featuredExpos: [_.find(expos, {featured: true})],
 		expos: _.reject(expos, {featured: true}),
@@ -96,6 +95,11 @@ app.get('/', function(req, res){
 			})
 		})
 	});
+});
+
+app.get('/admin/reload', function(req, res){
+	process.send({action: 'refresh', uid: Math.random()});
+	res.end('done ('+require('cluster').worker.id+')');
 });
 
 //Route that catches uncached dropbox assets. Downloads them and saves them to the fs.
@@ -153,7 +157,6 @@ var getExpos = function(cb){
 	file.on('finish', function(){
 		var workbook = xlsx.readFile(config.expositionsPath);
 		var data = xlsx.utils.sheet_to_json(workbook.Sheets.Sheet1, {header:1});
-		console.log("Got data:", data);
 		var expos = _.map(_.rest(data), function(row){
 			return {
 				name: row[0],
@@ -199,17 +202,31 @@ var getAlbums = function(done){
 //Setup the file system, and do an initial load of the data
 mkdirp.sync(config.albumsDistDir);
 var albums, expos;
-async.parallel(
-	[
-		getAlbums,
-		getExpos
-	], function(err, data){
-		if(err) throw err;
-		albums = data[0];
-		expos = data[1];
-		console.info("Loaded %d albums and %d exhibitions.", albums.length, expos.length);
-		http.createServer(app).listen(app.get('port'), function(){
-			console.info("HTTP server listening on port "+app.get('port'));
-		});
-	}
-);
+
+function load(done){
+	async.parallel(
+		[
+			getAlbums,
+			getExpos
+		], function(err, data){
+			if(err) throw err;
+			albums = data[0];
+			expos = data[1];
+			console.info("Loaded %d albums and %d exhibitions.", albums.length, expos.length);
+			done ? done() : null;
+		}
+	);
+}
+
+load(function(){
+	http.createServer(app).listen(app.get('port'), function(){
+		console.info("HTTP server listening on port "+app.get('port'));
+	});
+});
+
+process.on('message', function(message){
+  if(message.action == 'reload'){
+		console.info("Reload message received (cluster: "+require('cluster').worker.id+")");
+		load();
+  }
+});
