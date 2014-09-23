@@ -47,7 +47,12 @@ try {
 		dropbox: {
 			secret: process.env.DROPBOX_SECRET,
 			token: process.env.DROPBOX_TOKEN
-		}
+		},
+		gmail: {
+			email: process.env.GMAIL_EMAIL,
+			password: process.env.GMAIL_PASSWORD
+		},
+		toEmail: process.env.TO_EMAIL
 	};
 }
 
@@ -55,7 +60,16 @@ client = new Dropbox.Client({
 		key: "l5inr16mi6dwj2h",
 		secret: secrets.dropbox.secret,
 		token:  secrets.dropbox.token
-}),
+});
+
+var transporter = require('nodemailer').createTransport({
+	service: 'gmail',
+	auth: {
+			user: secrets.gmail.email,
+			pass: secrets.gmail.password
+	}
+});
+
 
 app.set('env', process.env.NODE_ENV);
 app.set('port', process.env.PORT || 2000);
@@ -70,6 +84,8 @@ app.configure(function(){
 
 	// app.use(express.logger());
 	app.use(express.static(path.join(__dirname,'../public')));
+	app.use(express.json());
+	app.use(express.urlencoded());
 	app.use(app.router);
 
 	app.use(function(req, res){
@@ -97,6 +113,15 @@ app.get('/', function(req, res){
 	});
 });
 
+app.post('/contact', function(req, res){
+	transporter.sendMail({
+		from: secrets.gmail.email,
+		to: secrets.toEmail,
+		subject: 'Nouveau message sur christelledreux.com',
+		text: 'Message de: '+req.body.from+' \n '+req.body.message
+	});
+});
+
 app.get('/admin/reload', function(req, res){
 	process.send({action: 'refresh', uid: Math.random()});
 	res.end('done ('+require('cluster').worker.id+')');
@@ -116,6 +141,8 @@ app.get('/dist/albums/:album/:image.:size.:ext', function(req, res, next){
 		res.sendfile(path);
 	});
 });
+
+
 
 //Retrieves and caches the image to file
 function lazyFetch(album, image, ext, size, done){
