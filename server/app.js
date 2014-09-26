@@ -114,12 +114,14 @@ app.get('/', function(req, res){
 });
 
 app.post('/contact', function(req, res){
-	transporter.sendMail({
-		from: secrets.gmail.email,
-		to: secrets.toEmail,
-		subject: 'Nouveau message sur christelledreux.com',
-		text: 'Message de: '+req.body.from+' \n '+req.body.message
-	});
+	res.json({});
+	// transporter.sendMail({
+	// 	from: secrets.gmail.email,
+	// 	to: secrets.toEmail,
+	// 	subject: 'Nouveau message sur christelledreux.com',
+	// 	text: 'Message de: '+req.body.email+' \n '+req.body.message
+	// });
+
 });
 
 app.get('/admin/reload', function(req, res){

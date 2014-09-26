@@ -125,6 +125,21 @@ p.expo {
   margin: 50px;
 }
 
+div.message-container {
+  max-height: 0;
+  height: auto;
+  transition: max-height 1s;
+  overflow: hidden;
+  &.expanded {
+    max-height: 400px;
+  }
+
+}
+
+a#contact {
+  cursor: pointer;
+}
+
 div.copyright {
   font-weight: lighter;
   font-size: 0.8em;
