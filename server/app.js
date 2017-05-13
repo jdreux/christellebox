@@ -12,7 +12,6 @@ var express = require('express'),
 	app = express(),
 	hbs = exphbs.create({
       extname: '.hbs',
-      // defaultLayout: 'main',
        helpers: {
           join: function(val, delimiter){
               if(val) return val.join(delimiter);
@@ -29,30 +28,34 @@ var express = require('express'),
       }
   });
 
-var config = {
-		distDir: './public/dist/',
-		albumsDistDir: './public/dist/albums/',
-		publicAlbumsDir: './dist/albums/',
-		expositionsPath: './public/dist/expositions.xlsx',
-	},
-	secrets;
+const artist = process.env.ARTIST || 'pa',
+			config = {
+				distDir: './public/dist/',
+				albumsDistDir: './public/dist/albums/',
+				publicAlbumsDir: './dist/albums/',
+				expositionsPath: './public/dist/expositions.xlsx',
+				home: 'home-'+artist,
+			};
+var secrets;
 
 //Try to load the secrets module (local env)
-
 try {
 	secrets = require('./secrets');
 } catch(err){
 	//Not available, use params instead
+	if(!process.env.DROPBOX_SECRET || process.env.DROPBOX_TOKEN) {
+		throw "No dropbox tokens defined!";
+	}
 	secrets = {
 		dropbox: {
 			secret: process.env.DROPBOX_SECRET,
-			token: process.env.DROPBOX_TOKEN
+			token: process.env.DROPBOX_TOKEN,
 		},
 		gmail: {
 			email: process.env.GMAIL_EMAIL,
-			password: process.env.GMAIL_PASSWORD
+			password: process.env.GMAIL_PASSWORD,
 		},
-		toEmail: process.env.TO_EMAIL
+		toEmail: process.env.TO_EMAIL,
 	};
 }
 
@@ -75,14 +78,10 @@ app.set('env', process.env.NODE_ENV);
 app.set('port', process.env.PORT || 2000);
 
 app.configure(function(){
-
 	app.engine('.hbs', hbs.engine);
-
   app.set('view engine', '.hbs');
 
   app.use(express.compress());
-
-	// app.use(express.logger());
 	app.use(express.static(path.join(__dirname,'../public')));
 	app.use(express.json());
 	app.use(express.urlencoded());
@@ -91,7 +90,6 @@ app.configure(function(){
 	app.use(function(req, res){
 		res.status(404).sendfile('./public/404.html');
 	});
-
 	app.use(function(err){
 		console.error(err);
 		res.status(500).send('An error has occured');
@@ -99,7 +97,7 @@ app.configure(function(){
 });
 
 app.get('/', function(req, res){
-	res.render('home', {
+	res.render(config.home, {
 		featuredExpos: [_.find(expos, {featured: true})],
 		expos: _.reject(expos, {featured: true}),
 		albums: _.map(albums, function(a){
@@ -126,7 +124,7 @@ app.post('/contact', function(req, res){
 
 app.get('/admin/reload', function(req, res){
 	process.send({action: 'refresh', uid: Math.random()});
-	res.end('done ('+require('cluster').worker.id+')');
+	res.end('done ('+require('cluster').worker.id+'). Full reload started.');
 });
 
 //Route that catches uncached dropbox assets. Downloads them and saves them to the fs.
