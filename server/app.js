@@ -54,15 +54,14 @@ try {
 	secrets = require('./secrets');
 } catch(err){
 	//Not available, use params instead
-	if(!process.env.DROPBOX_SECRET || process.env.DROPBOX_TOKEN) {
+	if(!process.env.DROPBOX_SECRET || !process.env.DROPBOX_TOKEN) {
 		throw "No dropbox tokens defined!";
 	}
 	secrets = {
 		dropbox: {
 			secret: process.env.DROPBOX_SECRET,
 			token: process.env.DROPBOX_TOKEN,
-		},
-		toEmail: process.env.TO_EMAIL,
+		}
 	};
 }
 
