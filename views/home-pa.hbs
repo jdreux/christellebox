@@ -6,12 +6,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Christelle Dreux</title>
+    <title>philippe auriol</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/main-pa.css">
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.min.js"></script>
   </head>
@@ -19,185 +19,56 @@
       <!--[if lt IE 7]>
           <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
       <![endif]-->
-      <div class="row">
-        <div class="col-sm-3 menu">
-          <div class="logo">
-            <h1>Philippe Auriol</h1>
-          </div>
 
+      <!--div class="row">
+        <div class="col-sm-3 header">
+          philippe auriol
+        </div>
+        <div class="col-sm-9 menu">
           <ul>
             {{#each albums}}
             <li><a href="#{{name}}">{{name}}</a></li>
             {{/each}}
+            <li><a href="#expositions">Exposisitions</a></li>
+            <li><a href="#bio">Biographie</a></li>
           </ul>
-
-          <div class="footer">
-            <a href="#expositions">expositions</a>
-            <a href="#contact">contact</a>
-          </div>
         </div>
+      </div-->
 
-        <div class="col-sm-3"></div>
-
-        <div class="col-sm-9">
-          {{#each featuredExpos}}
-          <div class="row">
-            <div class="col-sm-12">
-              <a class="expo" name="{{name}}"><h2>{{name}}</h2></a>
-            </div>
-          </div>
-          <div class="row">
-            <p class="expo">
-              {{description}}
-            </p>
-          </div>
-
-          <div class="row">
-            {{#if links.maps}}
-            <div class="col-xs-4 text-center">
-              <a href="{{links.maps}}" target="blank"><i class="fa fa-map-marker fa-2x"></i></a>
-            </div>
-            {{/if}}
-            {{#if links.facebook}}
-            <div class="col-xs-4  text-center">
-              <a href="{{links.facebook}}" target="blank"><i class="fa fa-facebook fa-2x"></i></a>
-            </div>
-            {{/if}}
-            {{#if links.twitter}}
-            <div class="col-xs-4  text-center">
-              <a href="{{links.twitter}}" target="blank"><i class="fa fa-twitter fa-2x"></i></a>
-            </div>
-            {{/if}}
-          </div>
-
-          <div class="spacer"></div>
-
-
-          {{/each}}
-
-          {{#each albums}}
-          <div class="row">
-            <div class="col-sm-12">
-              <a class="album" name="{{name}}"><h2>{{name}}</h2></a>
-            </div>
-          </div>
-          <div class="row">
-            {{#each items}}
-            <div class="col-sm-4">
-            {{#each this}}
-              <a href="{{src}}" title="{{name}}" class="art-thumbnail" data-gallery>
-                <img src="" alt="{{name}}" data-src="{{thumbnail}}"/>
-                <p>{{name}}</p>
-              </a>
-            {{/each}}
-            </div>
-            {{/each}}
-          </div>
-          <div class="spacer"></div>
-
-          {{/each}}
-
-          <div class="row">
-            <div class="col-sm-12">
-              <a class="expo" name="expositions"><h2>Expositions</h2></a>
-            </div>
-          </div>
-          {{#each expos}}
-          <div class="row">
-            <p class="expo">
-              <strong>{{name}}</strong> {{description}}
-            </p>
-          </div>
-          {{/each}}
-
-          <div class="row">
-            <div class="col-sm-12">
-              <a class="expo" name="contact"><h2>Contact</h2></a>
-            </div>
-          </div>
-
-          <div class="message-container">
-            <form class="form-horizontal">
-              <fieldset>
-              <!-- Text input-->
-              <div class="form-group">
-                <div class="col-md-12">
-                  <input id="textinput" name="textinput" type="text" placeholder="Email" class="form-control input-md">
-                </div>
-              </div>
-
-              <!-- Textarea -->
-              <div class="form-group">
-                <div class="col-md-12">
-                  <textarea class="form-control" id="textarea" name="textarea" placeholder="Message"></textarea>
-                </div>
-              </div>
-
-              <button id="send" class="btn btn-primary pull-right">Envoyer</button>
-
-              </fieldset>
-            </form>
-
-          </div>
-
-          <div class="spacer"></div>
-
-          <div class="row">
-            <div class="col-xs-4 text-center">
-              <a id="contact"><i class="fa fa-envelope fa-2x"></i></a>
-            </div>
-            <div class="col-xs-4  text-center">
-              <a href="https://www.facebook.com/chris.dreux"><i class="fa fa-facebook fa-2x"></i></a>
-            </div>
-            <div class="col-xs-4  text-center">
-              <a href="http://www.saatchiart.com/christelledreux"><i class="fa fa-shopping-cart fa-2x"></i></a>
-            </div>
-          </div>
-
-          <div class="spacer"></div>
-          <div class="spacer"></div>
-          <div class="spacer"></div>
-          <div class="copyright text-center">
-            ©<script>document.write(new Date().getFullYear())</script> Christelle Dreux
-          </div>
-
+      {{#each albums}}
+      <div class="album">
+        <div class="title">
+          <a class="album" name="{{name}}">{{name}}</a>
         </div>
-      </div>
-
-      <!-- The Bootstrap Image Gallery lightbox, should be a child element of the document body -->
-      <div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls">
-          <!-- The container for the modal slides -->
-          <div class="slides"></div>
-          <!-- Controls for the borderless lightbox -->
-          <h3 class="title"></h3>
-          <a class="prev">‹</a>
-          <a class="next">›</a>
-          <a class="close">×</a>
-          <a class="play-pause"></a>
-          <ol class="indicator"></ol>
-          <!-- The modal dialog, which will be used to wrap the lightbox content -->
-          <div class="modal fade">
-              <div class="modal-dialog">
-                  <div class="modal-content">
-                      <div class="modal-header">
-                          <button type="button" class="close" aria-hidden="true">&times;</button>
-                          <h4 class="modal-title"></h4>
-                      </div>
-                      <div class="modal-body next"></div>
-                      <div class="modal-footer">
-                          <button type="button" class="btn btn-default pull-left prev">
-                              <i class="glyphicon glyphicon-chevron-left"></i>
-                              Previous
-                          </button>
-                          <button type="button" class="btn btn-primary next">
-                              Next
-                              <i class="glyphicon glyphicon-chevron-right"></i>
-                          </button>
-                      </div>
-                  </div>
-              </div>
+        {{#each items}}
+        {{#each this}}
+          <div>
+            <a href="{{src}}" title="{{name}}" class="art-thumbnail" data-gallery>
+              <img src="" alt="{{name}}" data-src="{{thumbnail}}"/>
+              <p>{{name}}</p>
+            </a>
           </div>
+        {{/each}}
+        {{/each}}
+        <!-- http://stackoverflow.com/questions/18744164/flex-box-align-last-row-to-grid -->
+        <div class="filler"></div>
+        <div class="filler"></div>
+        <div class="filler"></div>
+        <div class="filler"></div>
+        <div class="filler"></div>
+        <div class="filler"></div>
+        <div class="filler"></div>
+        <div class="filler"></div>
+        <div class="filler"></div>
+        <div class="filler"></div>
+        <div class="filler"></div>
+        <div class="filler"></div>
+        <div class="filler"></div>
+
       </div>
+      {{/each}}
+
+
 
       <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
       <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/blueimp-gallery/2.15.0/js/jquery.blueimp-gallery.min.js"></script>

@@ -28,16 +28,27 @@ var express = require('express'),
       }
   });
 
-const artist = process.env.ARTIST || 'pa',
-			config = {
+const artist = process.env.ARTIST,
+			config = artist === 'pa' ?
+			{
 				distDir: './public/dist/',
 				albumsDistDir: './public/dist/albums/',
 				publicAlbumsDir: './dist/albums/',
 				expositionsPath: './public/dist/expositions.xlsx',
-				home: 'home-'+artist,
+				dropboxPath: '/folder-sites/website-pa/albums/',
+				home: 'home-pa',
+			}
+			:
+			{
+				distDir: './public/dist/',
+				albumsDistDir: './public/dist/albums/',
+				publicAlbumsDir: './dist/albums/',
+				expositionsPath: './public/dist/expositions.xlsx',
+				dropboxPath: '/website/albums/',
+				home: 'home-chd',
 			};
-var secrets;
 
+var secrets;
 //Try to load the secrets module (local env)
 try {
 	secrets = require('./secrets');
@@ -51,10 +62,6 @@ try {
 			secret: process.env.DROPBOX_SECRET,
 			token: process.env.DROPBOX_TOKEN,
 		},
-		gmail: {
-			email: process.env.GMAIL_EMAIL,
-			password: process.env.GMAIL_PASSWORD,
-		},
 		toEmail: process.env.TO_EMAIL,
 	};
 }
@@ -63,14 +70,6 @@ client = new Dropbox.Client({
 		key: "l5inr16mi6dwj2h",
 		secret: secrets.dropbox.secret,
 		token:  secrets.dropbox.token
-});
-
-var transporter = require('nodemailer').createTransport({
-	service: 'gmail',
-	auth: {
-			user: secrets.gmail.email,
-			pass: secrets.gmail.password
-	}
 });
 
 
@@ -111,17 +110,6 @@ app.get('/', function(req, res){
 	});
 });
 
-app.post('/contact', function(req, res){
-	res.json({});
-	// transporter.sendMail({
-	// 	from: secrets.gmail.email,
-	// 	to: secrets.toEmail,
-	// 	subject: 'Nouveau message sur christelledreux.com',
-	// 	text: 'Message de: '+req.body.email+' \n '+req.body.message
-	// });
-
-});
-
 app.get('/admin/reload', function(req, res){
 	process.send({action: 'refresh', uid: Math.random()});
 	res.end('done ('+require('cluster').worker.id+'). Full reload started.');
@@ -146,7 +134,7 @@ app.get('/dist/albums/:album/:image.:size.:ext', function(req, res, next){
 
 //Retrieves and caches the image to file
 function lazyFetch(album, image, ext, size, done){
-	var src = '/website/albums/'+album+'/'+image+'.'+ext,
+	var src = config.dropboxPath+album+'/'+image+'.'+ext,
 	 	 url = client.thumbnailUrl(src, {size: size})+"&access_token="+secrets.dropbox.token,
 			dest = config.albumsDistDir+album+'/'+image+'-'+size+'.jpg';
 
@@ -201,11 +189,11 @@ var getExpos = function(cb){
 }
 
 var getAlbums = function(done){
-	client.readdir('/website/albums/', function(error, folders){
+	client.readdir(config.dropboxPath, function(error, folders){
 		if(error) return done(error);
 
 		async.map(folders, function(album, cb){
-			client.readdir('/website/albums/'+album, function(error, files){
+			client.readdir(config.dropboxPath+album, function(error, files){
 				if(error) return cb(error);
 				cb(null, {
 					name: album,

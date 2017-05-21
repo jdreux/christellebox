@@ -1,0 +1,82 @@
+@import 'lib/normalize';
+@import 'lib/bootstrap';
+// @import 'lib/bootstrap-theme';
+// @import 'lib/flat-ui';
+@import 'lib/blueimp-gallery';
+@import 'modules/variables';
+@import 'modules/misc';
+
+$color-pa-yellow: #faf00e;
+$color-pa-blue: #0c5cea;
+$color-pa-red: #d00404;
+
+
+body {
+    padding: 5px;
+}
+
+div.header {
+  text-align:center;
+  font-size: xx-large;
+}
+
+div.menu {
+  ul {
+    list-style: none;
+    li {
+      float: left;
+    }
+  }
+}
+
+div.album {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  div {
+    margin: 5px;
+    width: 200px;
+    height: 300px;
+    overflow: hidden;
+  }
+  div.title {
+    padding: 5px;
+    font-size: 3.3em;
+    background-color: $color-pa-yellow;
+    word-break: break-all;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    a {
+      color: white!important;
+    }
+  }
+  div.filler {
+    height: 0px;
+  }
+}
+
+div.album:nth-of-type(1n) {
+  div.title {
+    background-color: $color-pa-yellow;
+  }
+}
+
+
+div.album:nth-of-type(2n) {
+  div.title {
+    background-color: $color-pa-red;
+  }
+}
+
+div.album:nth-of-type(3n) {
+  div.title {
+    background-color: $color-pa-blue;
+  }
+}
+
+
+// div.album:after {
+//   content: "";
+//   flex: auto;
+// }
