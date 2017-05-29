@@ -19,26 +19,22 @@
       <!--[if lt IE 7]>
           <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
       <![endif]-->
-
-      <!--div class="row">
-        <div class="col-sm-3 header">
-          philippe auriol
-        </div>
-        <div class="col-sm-9 menu">
-          <ul>
-            {{#each albums}}
-            <li><a href="#{{name}}">{{name}}</a></li>
-            {{/each}}
-            <li><a href="#expositions">Exposisitions</a></li>
-            <li><a href="#bio">Biographie</a></li>
-          </ul>
-        </div>
-      </div-->
+      <header class="main">
+        <h1>philippe auriol</h1>
+        <h2>peintre graveur</h2>
+        <ul>
+          {{#each albums}}
+          <li><a href="#{{name}}">{{name}}</a></li>
+          {{/each}}
+          <li><a href="#biographie">biographie</a></li>
+          <li><a href="#contact">contact</a></li>
+        </ul>
+      </header>
 
       {{#each albums}}
-      <div class="album">
+      <div class="section">
         <div class="title">
-          <a class="album" name="{{name}}">{{name}}</a>
+          <a name="{{name}}">{{name}}</a>
         </div>
         {{#each items}}
         {{#each this}}
@@ -67,6 +63,20 @@
 
       </div>
       {{/each}}
+
+      <div class="section">
+        <div class="title">
+          <a name="biographie">biographie</a>
+        </div>
+        <div></div>
+      </div>
+
+      <div class="section">
+        <div class="title">
+          <a name="contact">contact</a>
+        </div>
+        <div></div>
+      </div>
 
 
       <!-- The Bootstrap Image Gallery lightbox, should be a child element of the document body -->

@@ -14,9 +14,25 @@ body {
     padding: 5px;
 }
 
-div.header {
+header.main {
   text-align:center;
-  font-size: xx-large;
+  h1 {
+    font-size: 5em;
+  }
+
+  ul {
+    list-style: none;
+    li {
+      display: inline;
+      text-transform: lowercase;
+
+      &:not(:last-child):after {
+        content: ' • '
+      }
+    }
+  }
+
+
 }
 
 div.menu {
@@ -28,7 +44,7 @@ div.menu {
   }
 }
 
-div.album {
+div.section {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
@@ -83,20 +99,20 @@ div.album {
   }
 }
 
-div.album:nth-of-type(1n) {
+div.section:nth-of-type(1n) {
   div.title {
     background-color: $color-pa-yellow;
   }
 }
 
 
-div.album:nth-of-type(2n) {
+div.section:nth-of-type(2n) {
   div.title {
     background-color: $color-pa-red;
   }
 }
 
-div.album:nth-of-type(3n) {
+div.section:nth-of-type(3n) {
   div.title {
     background-color: $color-pa-blue;
   }
