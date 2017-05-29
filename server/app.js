@@ -9,6 +9,7 @@ var express = require('express'),
 	request = require('request'),
 	xlsx = require('xlsx'),
 	Dropbox = require("dropbox"),
+	rimraf = require('rimraf'),
 	app = express(),
 	hbs = exphbs.create({
       extname: '.hbs',
@@ -28,7 +29,7 @@ var express = require('express'),
       }
   });
 
-const artist = process.env.ARTIST,
+const artist = process.env.ARTIST || 'pa',
 			config = artist === 'pa' ?
 			{
 				distDir: './public/dist/',
@@ -65,10 +66,10 @@ try {
 	};
 }
 
-client = new Dropbox.Client({
-		key: "l5inr16mi6dwj2h",
-		secret: secrets.dropbox.secret,
-		token:  secrets.dropbox.token
+const dbx = new Dropbox({
+		// key: "l5inr16mi6dwj2h",
+		// secret: secrets.dropbox.secret,
+		accessToken:  secrets.dropbox.token
 });
 
 
@@ -133,33 +134,72 @@ app.get('/dist/albums/:album/:image.:size.:ext', function(req, res, next){
 
 //Retrieves and caches the image to file
 function lazyFetch(album, image, ext, size, done){
-	var src = config.dropboxPath+album+'/'+image+'.'+ext,
-	 	 url = client.thumbnailUrl(src, {size: size})+"&access_token="+secrets.dropbox.token,
-			dest = config.albumsDistDir+album+'/'+image+'-'+size+'.jpg';
+	const src = config.dropboxPath+album+'/'+image+'.'+ext,
+				url = +"&access_token="+secrets.dropbox.token,
+				dest = config.albumsDistDir+album+'/'+image+'-'+size+'.jpg';
 
-	mkdirp(config.albumsDistDir+album, function(err){
+	dbx.thumbnailUrl({path: src, size: 'w640h480'}).then(function(){
+		mkdirp(config.albumsDistDir+album, function(err){
+			if(err) {
+				console.error("Error creating album:", err);
+				return done(err);
+			}
+			var file = fs.createWriteStream(dest, {flags: 'wx'});
+			request(url).pipe(file);
+
+			file.on('finish', function() {
+				console.log("Downloaded "+url+" to "+dest+"\n");
+				file.close();
+				done(null, dest);
+			});
+			file.on('error', function(e){
+					//If file exists, just serve that one
+					if (e.code !== 'EEXIST') {
+						return done(e);
+					} else {
+						return done(null, dest);
+					}
+			});
+		});
+	}, function(err){
 		if(err) {
-			console.error("Error creating album:", err);
+			console.error("Error fetching thumbnail:", err);
 			return done(err);
 		}
-		var file = fs.createWriteStream(dest, {flags: 'wx'});
-		request(url).pipe(file);
-
-		file.on('finish', function() {
-			console.log("Downloaded "+url+" to "+dest+"\n");
-			file.close();
-			done(null, dest);
-		});
-		file.on('error', function(e){
-				//If file exists, just serve that one
-				if (e.code !== 'EEXIST') {
-					return done(e);
-				} else {
-					return done(null, dest);
-				}
-		});
 	});
 }
+
+// _.map(mediaFiles.entries, function(file){
+//
+// });
+
+// async.map(mediaFiles.entries, function(file, cb){
+// 	console.log(file);
+// 	dbx.filesGetThumbnail({
+// 		path: file.path_lower,
+// 		size: 'w640h480'
+// 	}).then(function(thumbnail){
+// 		console.log('thumbnail', thumbnail);
+// 	})
+// });
+// async.map(mediaFiles.entries, function(file, cb2){
+// 	// console.log(file);
+// 	dbx.filesDownload({path: file.path_lower}).then(function(data){
+// 		// console.log("Got data", data.name);
+// 		fs.writeFile(config.distDir+file.path_lower, data.fileBinary, 'binary', function (err) {
+//       cb2(err);
+//       console.log('File: ' + file.path_lower + ' saved.');
+//     });
+// 	});
+// });
+
+// mkdirp(config.distDir+album.path_lower, function(err){
+// 	if(err) {
+// 		console.error("Error creating album:", err);
+// 		return done(err);
+// 	}
+//
+// });
 
 //Dropbox content loaders
 
@@ -187,60 +227,117 @@ var getExpos = function(cb){
 	});
 }
 
-var getAlbums = function(done){
-	client.readdir(config.dropboxPath, function(error, folders){
-		if(error) return done(error);
-
-		async.map(folders, function(album, cb){
-			client.readdir(config.dropboxPath+album, function(error, files){
-				if(error) return cb(error);
-				cb(null, {
-					name: album,
-					art: _.map(files, function(filename){
-						var name = path.basename(filename, path.extname(filename));
-						return {
-							name: name,
-							src: config.publicAlbumsDir+album+'/'+name+'.xl'+path.extname(filename),
-							thumbnail: config.publicAlbumsDir+album+'/'+name+'.l'+path.extname(filename)
-						};
-					})
-				});
-			});
-		}, function(err, albums){
-			if(err) return done(err);
-			done(null, albums);
-		});
-	});
-}
-
 //Setup the file system, and do an initial load of the data
 mkdirp.sync(config.albumsDistDir);
 var albums, expos;
 
-function load(done){
-	async.parallel(
-		[
-			getAlbums,
-			getExpos
-		], function(err, data){
-			if(err) throw err;
-			albums = data[0];
-			expos = data[1];
-			console.info("Loaded %d albums and %d exhibitions.", albums.length, expos.length);
-			done ? done() : null;
-		}
-	);
+// function load(done){
+// 	async.parallel(
+// 		[
+// 			// Get the albums & files content
+// 			function(callback){
+// 				dbx.filesListFolder({
+// 					path: config.dropboxPath,
+// 					include_media_info: true,
+// 				}).then(function(albumFolders){
+// 					async.map(albumFolders.entries, function(album, cb){
+// 						dbx.filesListFolder({
+// 							path: album.path_lower,
+// 							// include_media_info: true,
+// 						}).then(function(mediaFiles){
+// 							cb({
+// 								name: path.basename(album.path_display),
+// 							});
+// 						}).catch(cb);
+// 					}, callback);
+// 				}).catch(function(error){
+// 					console.error("Error fetching folders: ", error);
+// 					callback(error);
+// 				});
+// 			},
+//
+// 			// 		if(error) return done(error);
+// 			// 		async.map(folders, function(album, cb){
+// 			// 			client.readdir(config.dropboxPath+album, function(error, files){
+// 			// 				if(error) return cb(error);
+// 			// 				cb(null, {
+// 			// 					name: album,
+// 			// 					art: _.map(files, function(filename){
+// 			// 						var name = path.basename(filename, path.extname(filename));
+// 			// 						return {
+// 			// 							name: name,
+// 			// 							src: config.publicAlbumsDir+album+'/'+name+'.xl'+path.extname(filename),
+// 			// 							thumbnail: config.publicAlbumsDir+album+'/'+name+'.l'+path.extname(filename)
+// 			// 						};
+// 			// 					})
+// 			// 				});
+// 			// 			});
+// 			// 		}, function(err, albums){
+// 			// 			if(err) return done(err);
+// 			// 			done(null, albums);
+// 			// 		});
+// 			// 	});
+// 			// },
+// 			// getExpos
+// 		], function(err, data){
+// 			console.log("parallel cb")
+// 			if(err) throw err;
+// 			albums = data[0];
+// 			expos = data[1];
+// 			console.info("Loaded %d albums and %d exhibitions.", albums.length, expos.length);
+// 			done();
+// 		}
+// 	);
+// }
+
+function load(callback){
+	dbx.filesListFolder({
+		path: config.dropboxPath,
+		include_media_info: true,
+	}).then(function(albumFolders){
+		async.map(albumFolders.entries, function(album, cb){
+			dbx.filesListFolder({
+				path: album.path_lower,
+				include_media_info: true,
+			}).then(function(mediaFiles){
+				cb(null, {
+					name: path.basename(album.path_display),
+					art: _.map(mediaFiles.entries, function(file){
+						console.log(file);
+					}),
+				});
+			}).catch(cb);
+		}, function(error, albums){
+			if(error){
+				console.error("Error fetching albums: ", error);
+				throw error;
+			}
+			console.info("Loaded %d albums.", albums.length);
+			callback(albums);
+		});
+	}).catch(function(error){
+		console.error("Error fetching folders: ", error);
+		throw error;
+	});
 }
 
-load(function(){
-	http.createServer(app).listen(app.get('port'), function(){
-		console.info("HTTP server listening on port "+app.get('port'));
-	});
+http.createServer(app).listen(app.get('port'), function(){
+	console.info("HTTP server for artist '"+artist+"' listening on port "+app.get('port'));
+});
+
+if(app.get('env') !== 'production'){
+	rimraf.sync(config.distDir);
+}
+
+load(function(albums){
+	console.info("Loading done", albums);
 });
 
 process.on('message', function(message){
   if(message.action == 'reload'){
 		console.info("Reload message received (cluster: "+require('cluster').worker.id+")");
-		load();
+		load(function(){
+			console.info("Loading done");
+		});
   }
 });

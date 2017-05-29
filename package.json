@@ -14,7 +14,7 @@
   "author": "Julien Dreux",
   "dependencies": {
     "async": "~0.2.10",
-    "dropbox": "~0.10.2",
+    "dropbox": "^2.5.3",
     "express": "~3.4.7",
     "express3-handlebars": "~0.5.0",
     "forky": "0.0.2",

@@ -10,7 +10,6 @@ $color-pa-yellow: #faf00e;
 $color-pa-blue: #0c5cea;
 $color-pa-red: #d00404;
 
-
 body {
     padding: 5px;
 }
@@ -43,7 +42,7 @@ div.album {
     padding: 5px;
     font-size: 3.3em;
     background-color: $color-pa-yellow;
-    word-break: break-all;
+    // word-break: break-all;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -74,9 +73,3 @@ div.album:nth-of-type(3n) {
     background-color: $color-pa-blue;
   }
 }
-
-
-// div.album:after {
-//   content: "";
-//   flex: auto;
-// }
