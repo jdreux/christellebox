@@ -17,3 +17,5 @@ node_modules
 server/secrets.js
 
 .sass-cache
+
+public/dist/

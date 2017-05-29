@@ -107,7 +107,7 @@ app.get('/', function(req, res){
 
 app.get('/admin/reload', function(req, res){
 	process.send({action: 'refresh', uid: Math.random()});
-	res.end('done ('+require('cluster').worker.id+'). Full reload started.');
+	res.end('Reload started. You can navigate back to the homepage now!');
 });
 
 //Routes that catches uncached dropbox assets. Downloads them and saves them to the fs.
