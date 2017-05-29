@@ -94,7 +94,6 @@ app.get('/', function(req, res){
 		// featuredExpos: [_.find(expos, {featured: true})],
 		// expos: _.reject(expos, {featured: true}),
 		albums: _.map(app.get('albums'), function(a){
-			console.log("Got a", a);
 			return _.extend(a, {
 				items: _.reduce(a.art, function(acc, item, index){
 					acc[index%3].push(item);
