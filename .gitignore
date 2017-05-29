@@ -19,3 +19,4 @@ server/secrets.js
 .sass-cache
 
 public/dist/
+node_modules
