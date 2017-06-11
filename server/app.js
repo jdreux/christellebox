@@ -11,6 +11,7 @@ var express = require('express'),
 	xlsx = require('xlsx'),
 	Dropbox = require('dropbox'),
 	rimraf = require('rimraf'),
+	marked = require('marked'),
 	app = express(),
 	hbs = exphbs.create({
       extname: '.hbs',
@@ -38,11 +39,15 @@ const DIST_DIR = './public/dist/',
 			{
 				dropboxPath: '/folder-sites/website-pa/albums/',
 				home: 'home-pa',
+				content: {
+					biographie: '/folder-sites/website-pa/biographie.md'
+				}
 			}
 			:
 			{
 				dropboxPath: '/website/albums/',
 				home: 'home-chd',
+				content: {}
 			};
 
 var secrets;
@@ -93,14 +98,8 @@ app.get('/', function(req, res){
 	res.render(CONFIG.home, {
 		// featuredExpos: [_.find(expos, {featured: true})],
 		// expos: _.reject(expos, {featured: true}),
-		albums: _.map(app.get('albums'), function(a){
-			return _.extend(a, {
-				items: _.reduce(a.art, function(acc, item, index){
-					acc[index%3].push(item);
-					return acc;
-				}, [[], [], []])
-			})
-		})
+		albums: app.get('albums'),
+		content: app.get('content'),
 	});
 });
 
@@ -174,43 +173,65 @@ function fetchThumbnail(dbPath, callback){
 mkdirp.sync(DIST_DIR);
 
 function load(callback){
+	loadAlbums(function(error, albums){
+		if (error) return callback(error);
+		async.mapValues(CONFIG.content, function(path, key, done){
+			dbx.filesDownload({path: path}).then(function(data){
+				const string = JSON.parse(JSON.stringify(data.fileBinary));
+				console.log(Object.keys(data), string.substr(0, 100), data.fileBinary.substr(0, 100));
+				done(null, marked(string));
+			}).catch(callback);;
+		}, function(error, content){
+			callback(error, {
+				content: content,
+				albums: albums,
+			});
+		});
+	});
+}
+
+function loadAlbums(callback){
 	dbx.filesListFolder({
 		path: CONFIG.dropboxPath,
-		include_media_info: true,
+		include_media_info: false,
 	}).then(function(albumFolders){
 		async.map(albumFolders.entries, function(album, cb){
 			dbx.filesListFolder({
 				path: album.path_lower,
-				include_media_info: true,
+				include_media_info: false,
 			}).then(function(mediaFiles){
+				const sortedEntries = _.sortBy(mediaFiles.entries, function(e){
+					return e.path_lower;
+				});
+				const art = _.compact(_.map(sortedEntries, function(file){
+					const extension = path.extname(file.path_lower);
+					if(extension !== '.jpg'){
+						console.warn("Skipping file: ", file.path_lower);
+						return null;
+					}
+					return {
+						name: path.basename(
+							file.name,
+							path.extname(file.name)
+						).replace(/^\d\S*/,'').trim(),
+						src: path.join(IMAGES_PUBLIC_PATH, file.path_lower),
+						thumbnail_src: path.join(THUMBNAILS_PUBLIC_PATH, file.path_lower),
+						dropbox_path: file.path_lower,
+					}
+				}));
+				console.log(
+					"Loading entries for "+path.basename(album.path_display),
+					sortedEntries.length,
+					art.length
+				);
 				cb(null, {
 					name: path.basename(album.path_display),
-					art: _.compact(_.map(mediaFiles.entries, function(file){
-						const extension = path.extname(file.path_lower);
-						if(extension !== '.jpg'){
-							return null;
-						}
-						return {
-							name: path.basename(
-								file.name,
-								path.extname(file.name)
-							),
-							src: path.join(IMAGES_PUBLIC_PATH, file.path_lower),
-							thumbnail_src: path.join(THUMBNAILS_PUBLIC_PATH, file.path_lower),
-							dropbox_path: file.path_lower,
-							dimensions: file.media_info.metadata.dimensions
-						}
-					})),
+					art: art,
 				});
 			}).catch(cb);
-		}, function(error, albums){
-			if(error){
-				console.error("Error fetching albums: ", error, error.stack);
-				throw error;
-			}
-			console.info("Loaded %d albums.", albums.length);
-			callback(albums);
-		});
+		},
+		callback
+	);
 	}).catch(function(error){
 		console.error("Error fetching folders: ", error);
 		throw error;
@@ -225,16 +246,27 @@ if(app.get('env') !== 'production'){
 	rimraf.sync(DIST_DIR);
 }
 
-load(function(albums){
-	app.set('albums', albums);
-	// console.info("Loading done", util.inspect(albums, {showHidden: false, depth: null}));
+load(function(error, result){
+	if(error){
+		console.error("Error loading: ", error, error.stack);
+		throw error;
+	}
+	app.set('albums', result.albums);
+	app.set('content', result.content);
+	console.info("Initial loading done");
+	console.error(result.albums[0]);
 });
 
 process.on('message', function(message){
   if(message.action == 'reload'){
 		console.info("Reload message received (cluster: "+require('cluster').worker.id+")");
-		load(function(albums){
-			app.set('albums', albums);
+		load(function(error, result){
+			if(error){
+				console.error("Error loading: ", error, error.stack);
+				throw error;
+			}
+			app.set('albums', result.albums);
+			app.set('content', result.content);
 			console.info("Loading done");
 		});
   }

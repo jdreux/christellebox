@@ -21,7 +21,6 @@
       <![endif]-->
       <header class="main">
         <h1>philippe auriol</h1>
-        <h2>peintre graveur</h2>
         <ul>
           {{#each albums}}
           <li><a href="#{{name}}">{{name}}</a></li>
@@ -36,15 +35,13 @@
         <div class="title">
           <a name="{{name}}">{{name}}</a>
         </div>
-        {{#each items}}
-        {{#each this}}
+        {{#each art}}
           <div>
             <a href="{{src}}" title="{{name}}" class="art-thumbnail" data-gallery>
               <img src="" alt="{{name}}" data-src="{{thumbnail_src}}"/>
               <p>{{name}}</p>
             </a>
           </div>
-        {{/each}}
         {{/each}}
         <!-- http://stackoverflow.com/questions/18744164/flex-box-align-last-row-to-grid -->
         <div class="filler"></div>
@@ -68,7 +65,9 @@
         <div class="title">
           <a name="biographie">biographie</a>
         </div>
-        <div></div>
+        <div>
+          {{{content.biographie}}}
+        </div>
       </div>
 
       <div class="section">
