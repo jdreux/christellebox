@@ -17,15 +17,18 @@ body {
 header.main {
   text-align:center;
   h1 {
-    font-size: 5em;
+    font-size: 3em;
   }
 
-  ul {
+  ul#menu {
     list-style: none;
+    background-color: white;
+    opacity: 0.9;
+    padding: 10px;
+    font-weight: bold;
     li {
       display: inline;
       text-transform: lowercase;
-
       &:not(:last-child):after {
         content: ' • '
       }
@@ -33,15 +36,6 @@ header.main {
   }
 
 
-}
-
-div.menu {
-  ul {
-    list-style: none;
-    li {
-      float: left;
-    }
-  }
 }
 
 div.section {
@@ -67,31 +61,20 @@ div.section {
       min-width: 100%;
       min-height: 100%;
     }
-
-    p {
-      // background-color: black;
-      display: none;
-      color: rgba(0,0,0,0.7);
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      text-align: center;
-      height: 40px;
-      line-height: 40px;
-      margin: auto;
-    }
   }
   div.title {
     padding: 5px;
-    font-size: 3.3em;
+    font-size: 3em;
     background-color: $color-pa-yellow;
-    // word-break: break-all;
     display: flex;
     justify-content: center;
     flex-direction: column;
     a {
       color: white!important;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
     }
   }
   div.filler {
@@ -115,5 +98,28 @@ div.section:nth-of-type(2n) {
 div.section:nth-of-type(3n) {
   div.title {
     background-color: $color-pa-blue;
+  }
+}
+
+div.section.biographie, div.section.contact {
+  div:not(.title){
+    width: calc(100% - 340px);
+    min-width: 320px;
+    min-height: 240px;
+    height: auto;
+    overflow: visible;
+  }
+}
+
+div.section.contact {
+  div:not(.title){
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    span {
+      padding: 10px;
+      display: inline-block;
+      font-weight: bold;
+    }
   }
 }

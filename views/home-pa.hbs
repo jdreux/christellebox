@@ -21,7 +21,7 @@
       <![endif]-->
       <header class="main">
         <h1>philippe auriol</h1>
-        <ul>
+        <ul id="menu">
           {{#each albums}}
           <li><a href="#{{name}}">{{name}}</a></li>
           {{/each}}
@@ -61,7 +61,7 @@
       </div>
       {{/each}}
 
-      <div class="section">
+      <div class="section biographie">
         <div class="title">
           <a name="biographie">biographie</a>
         </div>
@@ -70,11 +70,30 @@
         </div>
       </div>
 
-      <div class="section">
+      <div class="section contact">
         <div class="title">
           <a name="contact">contact</a>
         </div>
-        <div></div>
+        <div>
+          <span>
+            Mail:
+            <a href="mailto:auriol.safran@wanadoo.fr">
+              auriol.safran@wanadoo.fr
+            </a>
+          </span>
+          <span>
+            Blog:
+            <a href="http://philippeauriol.over-blog.com/">
+              philippeauriol.over-blog.com
+            </a>
+          </span>
+          <span>
+            Fb:
+            <a href="https://www.facebook.com/philippe.auriol">
+              facebook.com/philippe.auriol
+            </a>
+          </span>
+        </div>
       </div>
 
 
@@ -120,14 +139,8 @@
       <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-placeholder/2.0.8/jquery.placeholder.min.js"></script>
       <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
       <script src="js/vendor/bootstrap-image-gallery.min.js"></script>
+      <script src="js/vendor/jquery.sticky.js"></script>
       <script src="js/plugins.js"></script>
       <script src="js/main.js"></script>
-      <script>
-          $(function(){
-              $('#blueimp-gallery').data('useBootstrapModal', false);
-              $('#blueimp-gallery').toggleClass('blueimp-gallery-controls', true);
-              $("img").unveil();
-          });
-      </script>
   </body>
 </html>

@@ -144,7 +144,6 @@ function fetchImage(dbPath, callback){
 				'binary',
 				function (err) {
 		      if(err) return callback(err);
-		      console.log('File: ' + localPath + ' saved.');
 					callback(null, localPath);
 	    });
 		});
@@ -162,7 +161,6 @@ function fetchThumbnail(dbPath, callback){
 				'binary',
 				function (err) {
 		      if(err) return callback(err);
-		      console.log('File: ' + localPath + ' saved.');
 					callback(null, localPath);
 	    });
 		});
@@ -177,9 +175,11 @@ function load(callback){
 		if (error) return callback(error);
 		async.mapValues(CONFIG.content, function(path, key, done){
 			dbx.filesDownload({path: path}).then(function(data){
-				const string = JSON.parse(JSON.stringify(data.fileBinary));
-				console.log(Object.keys(data), string.substr(0, 100), data.fileBinary.substr(0, 100));
-				done(null, marked(string));
+				// const string = JSON.parse(JSON.stringify(data.fileBinary));
+				// var jschardet = require("jschardet")
+				// console.log("encoding", jschardet.detect(data.fileBinary), data.fileBinary);
+				console.log("Loaded", data.fileBinary.substr(0, 100));
+				done(null, marked(data.fileBinary));
 			}).catch(callback);;
 		}, function(error, content){
 			callback(error, {
@@ -219,11 +219,6 @@ function loadAlbums(callback){
 						dropbox_path: file.path_lower,
 					}
 				}));
-				console.log(
-					"Loading entries for "+path.basename(album.path_display),
-					sortedEntries.length,
-					art.length
-				);
 				cb(null, {
 					name: path.basename(album.path_display),
 					art: art,
@@ -254,7 +249,6 @@ load(function(error, result){
 	app.set('albums', result.albums);
 	app.set('content', result.content);
 	console.info("Initial loading done");
-	console.error(result.albums[0]);
 });
 
 process.on('message', function(message){
