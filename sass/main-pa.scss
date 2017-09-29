@@ -101,7 +101,7 @@ div.section:nth-of-type(3n) {
   }
 }
 
-div.section.biographie, div.section.contact {
+div.section.text, div.section.contact {
   div:not(.title){
     width: calc(100% - 340px);
     min-width: 320px;

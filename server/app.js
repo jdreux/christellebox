@@ -34,20 +34,34 @@ var express = require('express'),
 const DIST_DIR = './public/dist/',
 			IMAGES_PUBLIC_PATH = '/dist/images/',
 			THUMBNAILS_PUBLIC_PATH = '/dist/thumbnails/',
- 			ARTIST = process.env.ARTIST || 'pa',
+ 			ARTIST = process.env.ARTIST || 'chd',
 			CONFIG = ARTIST === 'pa' ?
 			{
 				dropboxPath: '/folder-sites/website-pa/albums/',
 				home: 'home-pa',
 				content: {
-					biographie: '/folder-sites/website-pa/biographie.md'
-				}
+					biographie: '/folder-sites/website-pa/biographie.md',
+					expositions: '/folder-sites/website-pa/expositions.md'
+				},
+				transformer: _.identity,
 			}
 			:
 			{
 				dropboxPath: '/website/albums/',
 				home: 'home-chd',
-				content: {}
+				content: {},
+				transformer: function(albums){
+					console.log("content is!", albums);
+					return albums.map(function(album){
+						return _.extend(album, {
+							rows: album.art.reduce(function(acc, art, index){
+								acc[index % acc.length].push(art);
+								console.log(index,acc);
+								return acc;
+							}, [[],[],[]]),
+						});
+					});
+				}
 			};
 
 var secrets;
@@ -98,7 +112,7 @@ app.get('/', function(req, res){
 	res.render(CONFIG.home, {
 		// featuredExpos: [_.find(expos, {featured: true})],
 		// expos: _.reject(expos, {featured: true}),
-		albums: app.get('albums'),
+		albums: CONFIG.transformer(app.get('albums')),
 		content: app.get('content'),
 	});
 });

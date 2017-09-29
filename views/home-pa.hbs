@@ -26,6 +26,7 @@
           <li><a href="#{{name}}">{{name}}</a></li>
           {{/each}}
           <li><a href="#biographie">biographie</a></li>
+          <li><a href="#expositions">expositions</a></li>
           <li><a href="#contact">contact</a></li>
         </ul>
       </header>
@@ -61,12 +62,21 @@
       </div>
       {{/each}}
 
-      <div class="section biographie">
+      <div class="section text">
         <div class="title">
           <a name="biographie">biographie</a>
         </div>
         <div>
           {{{content.biographie}}}
+        </div>
+      </div>
+
+      <div class="section text">
+        <div class="title">
+          <a name="expositions">expositions</a>
+        </div>
+        <div>
+          {{{content.expositions}}}
         </div>
       </div>
 
