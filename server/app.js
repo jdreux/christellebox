@@ -34,7 +34,7 @@ var express = require('express'),
 const DIST_DIR = './public/dist/',
 			IMAGES_PUBLIC_PATH = '/dist/images/',
 			THUMBNAILS_PUBLIC_PATH = '/dist/thumbnails/',
- 			ARTIST = process.env.ARTIST || 'chd',
+ 			ARTIST = process.env.ARTIST || 'pa',
 			CONFIG = ARTIST === 'pa' ?
 			{
 				dropboxPath: '/folder-sites/website-pa/albums/',
