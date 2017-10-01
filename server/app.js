@@ -35,34 +35,41 @@ const DIST_DIR = './public/dist/',
 			IMAGES_PUBLIC_PATH = '/dist/images/',
 			THUMBNAILS_PUBLIC_PATH = '/dist/thumbnails/',
  			ARTIST = process.env.ARTIST || 'pa',
-			CONFIG = ARTIST === 'pa' ?
-			{
-				dropboxPath: '/folder-sites/website-pa/albums/',
-				home: 'home-pa',
-				content: {
-					biographie: '/folder-sites/website-pa/biographie.md',
-					expositions: '/folder-sites/website-pa/expositions.md'
+			CONFIG = _.extend(
+				{
+					content: {},
+					transformer: _.identity,
 				},
-				transformer: _.identity,
-			}
-			:
-			{
-				dropboxPath: '/website/albums/',
-				home: 'home-chd',
-				content: {},
-				transformer: function(albums){
-					console.log("content is!", albums);
-					return albums.map(function(album){
-						return _.extend(album, {
-							rows: album.art.reduce(function(acc, art, index){
-								acc[index % acc.length].push(art);
-								console.log(index,acc);
-								return acc;
-							}, [[],[],[]]),
-						});
-					});
+				ARTIST === 'chd' ?
+				{
+					dropboxPath: '/folder-sites/website-pa/albums/',
+					home: 'home-pa',
+					content: {
+						biographie: '/folder-sites/website-pa/biographie.md',
+						expositions: '/folder-sites/website-pa/expositions.md'
+					},
 				}
-			};
+				:
+				{
+					dropboxPath: '/folder-sites/website-chd/albums/',
+					home: 'home-chd',
+					content: {
+						expositions: '/folder-sites/website-chd/expositions.md'
+					},
+					transformer: function(albums){
+						console.log("content is!", albums);
+						return albums.map(function(album){
+							return _.extend(album, {
+								rows: album.art.reduce(function(acc, art, index){
+									acc[index % acc.length].push(art);
+									console.log(index,acc);
+									return acc;
+								}, [[],[],[]]),
+							});
+						});
+					},
+				}
+			);
 
 var secrets;
 //Try to load the secrets module (local env)
@@ -110,8 +117,6 @@ app.configure(function(){
 
 app.get('/', function(req, res){
 	res.render(CONFIG.home, {
-		// featuredExpos: [_.find(expos, {featured: true})],
-		// expos: _.reject(expos, {featured: true}),
 		albums: CONFIG.transformer(app.get('albums')),
 		content: app.get('content'),
 	});
@@ -189,10 +194,6 @@ function load(callback){
 		if (error) return callback(error);
 		async.mapValues(CONFIG.content, function(path, key, done){
 			dbx.filesDownload({path: path}).then(function(data){
-				// const string = JSON.parse(JSON.stringify(data.fileBinary));
-				// var jschardet = require("jschardet")
-				// console.log("encoding", jschardet.detect(data.fileBinary), data.fileBinary);
-				console.log("Loaded", data.fileBinary.substr(0, 100));
 				done(null, marked(data.fileBinary));
 			}).catch(callback);;
 		}, function(error, content){
