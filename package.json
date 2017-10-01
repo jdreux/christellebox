@@ -9,9 +9,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "supervisor -w server/ server/app.js",
-    "startchd": "set ARTIST=chd && supervisor -w server/ server/app.js",
-    "startpa": "set ARTIST=pa && supervisor -w server/ server/app.js"
+    "start": "ARTIST=chd supervisor -w server/ server/app.js",
+    "startchd": "ARTIST=chd supervisor -w server/ server/app.js",
+    "startpa": "ARTIST=pa supervisor -w server/ server/app.js"
   },
   "author": "Julien Dreux",
   "dependencies": {

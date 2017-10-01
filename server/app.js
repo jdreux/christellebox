@@ -31,16 +31,20 @@ var express = require('express'),
       }
   });
 
+if(!process.env.ARTIST){
+	throw "Must provide artist env.";
+}
+
 const DIST_DIR = './public/dist/',
 			IMAGES_PUBLIC_PATH = '/dist/images/',
 			THUMBNAILS_PUBLIC_PATH = '/dist/thumbnails/',
- 			ARTIST = process.env.ARTIST || 'pa',
+ 			ARTIST = process.env.ARTIST,
 			CONFIG = _.extend(
 				{
 					content: {},
 					transformer: _.identity,
 				},
-				ARTIST === 'chd' ?
+				ARTIST === 'pa' ?
 				{
 					dropboxPath: '/folder-sites/website-pa/albums/',
 					home: 'home-pa',
@@ -57,12 +61,10 @@ const DIST_DIR = './public/dist/',
 						expositions: '/folder-sites/website-chd/expositions.md'
 					},
 					transformer: function(albums){
-						console.log("content is!", albums);
 						return albums.map(function(album){
 							return _.extend(album, {
 								rows: album.art.reduce(function(acc, art, index){
 									acc[index % acc.length].push(art);
-									console.log(index,acc);
 									return acc;
 								}, [[],[],[]]),
 							});
