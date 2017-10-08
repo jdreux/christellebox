@@ -58,7 +58,8 @@ const DIST_DIR = './public/dist/',
 					dropboxPath: '/folder-sites/website-chd/albums/',
 					home: 'home-chd',
 					content: {
-						expositions: '/folder-sites/website-chd/expositions.md'
+						expositions: '/folder-sites/website-chd/expositions.md',
+						header: '/folder-sites/website-chd/entête.md',
 					},
 					transformer: function(albums){
 						return albums.map(function(album){
@@ -117,16 +118,9 @@ app.configure(function(){
 	});
 });
 
-app.get('/', function(req, res){
-	res.render(CONFIG.home, {
-		albums: CONFIG.transformer(app.get('albums')),
-		content: app.get('content'),
-	});
-});
-
-app.get('/admin/reload', function(req, res){
+app.get('/admin/reload-9185572760', function(req, res){
 	process.send({action: 'refresh', uid: Math.random()});
-	res.end('Reload started. You can navigate back to the homepage now!');
+	res.end('Reload started. Wait a few minutes and naviate back to the homepage.');
 });
 
 //Routes that catches uncached dropbox assets. Downloads them and saves them to the fs.
@@ -250,13 +244,19 @@ function loadAlbums(callback){
 	});
 }
 
-http.createServer(app).listen(app.get('port'), function(){
-	console.info("HTTP server for artist '"+ARTIST+"' listening on port "+app.get('port'));
+const server = http.createServer(app);
+
+app.get('/', function(req, res){
+	if(!app.get('albums')) {
+		console.warn("Rendering homepage with albums not set >: /");
+	}
+
+	res.render(CONFIG.home, {
+		albums: CONFIG.transformer(app.get('albums')),
+		content: app.get('content'),
+	});
 });
 
-if(app.get('env') !== 'production'){
-	rimraf.sync(DIST_DIR);
-}
 
 load(function(error, result){
 	if(error){
@@ -265,8 +265,15 @@ load(function(error, result){
 	}
 	app.set('albums', result.albums);
 	app.set('content', result.content);
+	server.listen(app.get('port'), function(){
+		console.info("HTTP server for artist '"+ARTIST+"' listening on port "+app.get('port'));
+	});
 	console.info("Initial loading done");
 });
+
+if(app.get('env') !== 'production'){
+	rimraf.sync(DIST_DIR);
+}
 
 process.on('message', function(message){
   if(message.action == 'reload'){
@@ -278,7 +285,7 @@ process.on('message', function(message){
 			}
 			app.set('albums', result.albums);
 			app.set('content', result.content);
-			console.info("Loading done");
+			console.info("Re-loading done");
 		});
   }
 });
