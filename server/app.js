@@ -212,7 +212,7 @@ function loadAlbums(callback){
 				include_media_info: false,
 			}).then(function(mediaFiles){
 				const sortedEntries = _.sortBy(mediaFiles.entries, function(e){
-					return e.path_lower;
+					return e.path_display;
 				});
 				const art = _.compact(_.map(sortedEntries, function(file){
 					const extension = path.extname(file.path_lower);
