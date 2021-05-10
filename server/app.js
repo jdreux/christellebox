@@ -212,8 +212,8 @@ function loadAlbums(callback){
 				include_media_info: false,
 			}).then(function(mediaFiles){
 				const sortedEntries = _.sortBy(mediaFiles.entries, function(e){
-					return e.path_display;
-				}).reverse();
+					return e.path_lower;
+				});
 				const art = _.compact(_.map(sortedEntries, function(file){
 					const extension = path.extname(file.path_lower);
 					if(extension !== '.jpg'){
