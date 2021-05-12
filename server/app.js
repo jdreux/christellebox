@@ -206,7 +206,10 @@ function loadAlbums(callback){
 		path: CONFIG.dropboxPath,
 		include_media_info: false,
 	}).then(function(albumFolders){
-		async.map(albumFolders.entries, function(album, cb){
+		const sortedAlbums = _.sortBy(albumFolders.entries, function(e){
+			return e.path_lower;
+		});
+		async.map(sortedAlbums, function(album, cb){
 			dbx.filesListFolder({
 				path: album.path_lower,
 				include_media_info: false,
@@ -231,7 +234,7 @@ function loadAlbums(callback){
 					}
 				}));
 				cb(null, {
-					name: path.basename(album.path_display),
+					name: path.basename(album.path_display).replace(/^\d\S*/,'').trim(),
 					art: art,
 				});
 			}).catch(cb);
