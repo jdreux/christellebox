@@ -144,7 +144,7 @@ app.configure(function(){
 
 app.get('/admin/reload-9185572760', function(req, res){
 	process.send({action: 'refresh', uid: Math.random()});
-	res.end('Reload started. Wait a few minutes and naviate back to the homepage.');
+	res.end('Reload started. Wait a few minutes and navigate back to the homepage.');
 });
 
 //Routes that catches uncached dropbox assets. Downloads them and saves them to the fs.
