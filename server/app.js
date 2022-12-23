@@ -35,44 +35,68 @@ if(!process.env.ARTIST){
 	throw "Must provide artist env.";
 }
 
+const ARTIST_CONFIG = {
+	'pa' : {
+		dropboxPath: '/folder-sites/website-pa/albums/',
+		home: 'home-pa',
+		content: {
+			biographie: '/folder-sites/website-pa/biographie.md',
+			expositions: '/folder-sites/website-pa/expositions.md'
+		},
+	},
+	'chd' : {
+		dropboxPath: '/folder-sites/website-chd/albums/',
+		home: 'home-chd',
+		content: {
+			expositions: '/folder-sites/website-chd/expositions.md',
+			header: '/folder-sites/website-chd/entête.md',		
+		},
+		title: 'Christelle Dreux',
+		transformer: function(albums){
+			return albums.map(function(album){
+				return _.extend(album, {
+					rows: album.art.reduce(function(acc, art, index){
+						acc[index % acc.length].push(art);
+						return acc;
+					}, [[],[],[]]),
+				});
+			});
+		},
+	},
+	'chdbot' : {
+		dropboxPath: '/folder-sites/website-chdbot/albums/',
+		home: 'home-chd',
+		content: {
+			expositions: '/folder-sites/website-chdbot/expositions.md',
+			header: '/folder-sites/website-chdbot/entête.md',
+		},
+		title: 'Christelle Bot',
+		transformer: function(albums){
+			return albums.map(function(album){
+				return _.extend(album, {
+					rows: album.art.reduce(function(acc, art, index){
+						acc[index % acc.length].push(art);
+						return acc;
+					}, [[],[],[]]),
+				});
+			});
+		},
+	}
+}
+
+
 const DIST_DIR = './public/dist/',
-			IMAGES_PUBLIC_PATH = '/dist/images/',
-			THUMBNAILS_PUBLIC_PATH = '/dist/thumbnails/',
- 			ARTIST = process.env.ARTIST,
-			CONFIG = _.extend(
-				{
-					content: {},
-					transformer: _.identity,
-				},
-				ARTIST === 'pa' ?
-				{
-					dropboxPath: '/folder-sites/website-pa/albums/',
-					home: 'home-pa',
-					content: {
-						biographie: '/folder-sites/website-pa/biographie.md',
-						expositions: '/folder-sites/website-pa/expositions.md'
-					},
-				}
-				:
-				{
-					dropboxPath: '/folder-sites/website-chd/albums/',
-					home: 'home-chd',
-					content: {
-						expositions: '/folder-sites/website-chd/expositions.md',
-						header: '/folder-sites/website-chd/entête.md',
-					},
-					transformer: function(albums){
-						return albums.map(function(album){
-							return _.extend(album, {
-								rows: album.art.reduce(function(acc, art, index){
-									acc[index % acc.length].push(art);
-									return acc;
-								}, [[],[],[]]),
-							});
-						});
-					},
-				}
-			);
+	IMAGES_PUBLIC_PATH = '/dist/images/',
+	THUMBNAILS_PUBLIC_PATH = '/dist/thumbnails/',
+	ARTIST = process.env.ARTIST,
+	CONFIG = _.extend(
+		{
+			content: {},
+			transformer: _.identity,
+		}, ARTIST_CONFIG[ARTIST]
+	);
+
+app.set('title', CONFIG.title);
 
 var secrets;
 //Try to load the secrets module (local env)
@@ -124,8 +148,8 @@ app.get('/admin/reload-9185572760', function(req, res){
 });
 
 //Routes that catches uncached dropbox assets. Downloads them and saves them to the fs.
-app.get(IMAGES_PUBLIC_PATH+'*.jpg', function(req, res, next){
-	const dbPath = '/'+req.params[0]+'.jpg';
+app.get(IMAGES_PUBLIC_PATH+'*.(jpg|png)', function(req, res, next){
+	const dbPath = '/'+req.params[0]+'.'+req.params[1];
 	console.info("Fetching uncached image at:", dbPath);
 	fetchImage(dbPath, function(err, localPath){
 		if(err){
@@ -136,8 +160,8 @@ app.get(IMAGES_PUBLIC_PATH+'*.jpg', function(req, res, next){
 	});
 });
 
-app.get(THUMBNAILS_PUBLIC_PATH+'*.jpg', function(req, res, next){
-	const dbPath = '/'+req.params[0]+'.jpg';
+app.get(THUMBNAILS_PUBLIC_PATH+'*.(jpg|png)', function(req, res, next){
+	const dbPath = '/'+req.params[0]+'.'+req.params[1];
 	console.info("Fetching uncached thumbnail at:", dbPath);
 	fetchThumbnail(dbPath, function(err, localPath){
 		if(err){
@@ -219,7 +243,7 @@ function loadAlbums(callback){
 				});
 				const art = _.compact(_.map(sortedEntries, function(file){
 					const extension = path.extname(file.path_lower);
-					if(extension !== '.jpg'){
+					if(extension !== '.jpg' && extension !== '.png'){
 						console.warn("Skipping file: ", file.path_lower);
 						return null;
 					}
@@ -257,6 +281,7 @@ app.get('/', function(req, res){
 	res.render(CONFIG.home, {
 		albums: CONFIG.transformer(app.get('albums')),
 		content: app.get('content'),
+		title: app.get('title')
 	});
 });
 
