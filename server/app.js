@@ -219,7 +219,7 @@ function load(callback){
 		if (error) return callback(error);
 		async.mapValues(CONFIG.content, function(path, key, done){
 			dbx.filesDownload({path: path}).then(function(data){
-				done(null, marked(new TextDecoder().decode(data.result.fileBinary)));
+				done(null, marked(new TextDecoder('iso-8859-1').decode(data.result.fileBinary)));
 			}).catch(callback);;
 		}, function(error, content){
 			callback(error, {
