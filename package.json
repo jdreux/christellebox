@@ -11,32 +11,30 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ARTIST=chd supervisor -w server/ server/app.js",
+    "startnd": "ARTIST=chd node server/app.js",
     "startchd": "ARTIST=chd supervisor -w server/ server/app.js",
     "startchdbot": "ARTIST=chdbot supervisor -w server/ server/app.js",
     "startpa": "ARTIST=pa supervisor -w server/ server/app.js"
   },
   "author": "Julien Dreux",
   "dependencies": {
-    "async": "^2.4.1",
-    "dropbox": "^2.5.3",
+    "async": "^2.6.4",
+    "dropbox": "^10.34.0",
     "express": "~3.4.7",
-    "express3-handlebars": "~0.5.0",
+    "express3-handlebars": "^0.5.2",
     "forky": "0.0.2",
-    "lockfile": "~0.4.2",
-    "lodash": "^3.0.0",
-    "marked": "^0.3.6",
-    "mkdirp": "~0.5.0",
-    "nodemailer": "^1.3.0",
-    "q": "~1.0.1",
+    "lockfile": "^0.4.3",
+    "lodash": "^3.10.1",
+    "marked": "^0.3.19",
+    "mkdirp": "^0.5.6",
     "request": "~2.33.0",
-    "rimraf": "~2.2.6",
-    "xlsx": "~0.7.6-g"
+    "rimraf": "~2.2.6"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-compass": "^0.3.9",
-    "grunt-concurrent": "^1.0.0",
-    "grunt-contrib-compass": "^1.0.1",
+    "grunt-concurrent": "^1.0.1",
+    "grunt-contrib-compass": "^1.1.1",
     "grunt-contrib-watch": "^0.6.1",
     "mysql": "~2.3.0"
   }

@@ -1,4 +1,4 @@
-var express = require('express'),
+const express = require('express'),
 	path = require('path'),
 	http = require('http'),
 	fs = require('fs'),
@@ -8,8 +8,7 @@ var express = require('express'),
 	exphbs  = require('express3-handlebars'),
 	mkdirp = require('mkdirp'),
 	request = require('request'),
-	xlsx = require('xlsx'),
-	Dropbox = require('dropbox'),
+	Dropbox = require('dropbox').Dropbox,
 	rimraf = require('rimraf'),
 	marked = require('marked'),
 	app = express(),
@@ -104,21 +103,27 @@ try {
 	secrets = require('./secrets');
 } catch(err){
 	//Not available, use params instead
-	if(!process.env.DROPBOX_SECRET || !process.env.DROPBOX_TOKEN) {
-		throw "No dropbox tokens defined!";
+	if(!process.env.DROPBOX_ID || !process.env.DROPBOX_SECRET || !process.env.DROPBOX_REFRESH_TOKEN) {
+		throw "Missing dropbox environement variables!";
 	}
 	secrets = {
 		dropbox: {
 			secret: process.env.DROPBOX_SECRET,
-			token: process.env.DROPBOX_TOKEN,
+			id: process.env.DROPBOX_ID,
+			refreshToken: process.env.DROPBOX_REFRESH_TOKEN,
 		}
 	};
 }
 
-const dbx = new Dropbox({
-		accessToken:  secrets.dropbox.token
-});
+// const dbx = new Dropbox({
+// 	accessToken:  secrets.dropbox.token
+// });
 
+const dbx = new Dropbox({
+	clientId: secrets.dropbox.id,
+	clientSecret: secrets.dropbox.secret,
+	refreshToken: secrets.dropbox.refreshToken
+});
 
 app.set('env', process.env.NODE_ENV);
 app.set('port', process.env.PORT || 2000);
@@ -179,7 +184,7 @@ function fetchImage(dbPath, callback){
 			if(err) return callback(err);
 			fs.writeFile(
 				localPath,
-				data.fileBinary,
+				data.result.fileBinary,
 				'binary',
 				function (err) {
 		      if(err) return callback(err);
@@ -196,7 +201,7 @@ function fetchThumbnail(dbPath, callback){
 			if(err) return callback(err);
 			fs.writeFile(
 				localPath,
-				data.fileBinary,
+				data.result.fileBinary,
 				'binary',
 				function (err) {
 		      if(err) return callback(err);
@@ -214,7 +219,7 @@ function load(callback){
 		if (error) return callback(error);
 		async.mapValues(CONFIG.content, function(path, key, done){
 			dbx.filesDownload({path: path}).then(function(data){
-				done(null, marked(data.fileBinary));
+				done(null, marked(new TextDecoder().decode(data.result.fileBinary)));
 			}).catch(callback);;
 		}, function(error, content){
 			callback(error, {
@@ -230,7 +235,7 @@ function loadAlbums(callback){
 		path: CONFIG.dropboxPath,
 		include_media_info: false,
 	}).then(function(albumFolders){
-		const sortedAlbums = _.sortBy(albumFolders.entries, function(e){
+		const sortedAlbums = _.sortBy(albumFolders.result.entries, function(e){
 			return e.path_lower;
 		});
 		async.map(sortedAlbums, function(album, cb){
@@ -238,7 +243,7 @@ function loadAlbums(callback){
 				path: album.path_lower,
 				include_media_info: false,
 			}).then(function(mediaFiles){
-				const sortedEntries = _.sortBy(mediaFiles.entries, function(e){
+				const sortedEntries = _.sortBy(mediaFiles.result.entries, function(e){
 					return e.path_lower;
 				});
 				const art = _.compact(_.map(sortedEntries, function(file){
