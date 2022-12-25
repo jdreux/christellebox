@@ -4,39 +4,32 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        compass: {
+        sass: {
             build: {
-                options: {
-                    sassDir: 'sass',
-                    cssDir: 'public/css',
-                    outputStyle: 'compressed'
-                }
+                files: [{
+                    expand: true,
+                    cwd: 'sass',
+                    src: ['*.scss'],
+                    dest: 'public/css',
+                    ext: '.css'
+                  }]
            },
-           watch: {
-                options: {
-                    sassDir: 'sass',
-                    cssDir: 'public/css',
-                    outputStyle: 'compressed',
-                    watch: true
-                }
-           }
         },
-        concurrent: {
-            watch: {
-                tasks: ['compass:watch'],
-                options: {
-                    logConcurrentOutput: true
-                }
+        watch: {
+            tasks: ['sass:build'],
+            files: 'sass/*.scss',
+            options: {
+                logConcurrentOutput: true
             }
         },
     });
 
     grunt.loadNpmTasks('grunt-concurrent');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-compass');
+    grunt.loadNpmTasks('grunt-contrib-sass');
 
-    grunt.registerTask('build', ['compass:build']);
-    grunt.registerTask('bwatch', ['build', 'concurrent']);
+    grunt.registerTask('build', ['sass:build']);
+    grunt.registerTask('bwatch', ['build', 'watch']);
 
     grunt.registerTask('default', 'bwatch');
 }

@@ -12,12 +12,8 @@ body {
 }
 
 .menu {
-    position: fixed;
-    height: 100%;
-
-    @media (max-width: 767px) {
-    	position: static;
-    }
+    height: 100%;  
+	position: static;
 
     .logo {
 	    border-top: 5px solid $color-primary;
@@ -35,39 +31,28 @@ body {
 	}
 
 	ul {
+		padding: 15px 0;
 	    list-style: none;
 	    padding-left: 0;
-
+		// border: 1px solid $color-secondary;
+		// border-width: 1px 0px;
 	    li {
-		    border-top: 1px solid $color-secondary;
-		    padding: 5px 0;
-
+		    padding: 5px 0 5px 5px;
+			// border-right: 1px solid $color-secondary;
+			display: inline;
 		    a {
 			    color: #000;
 			    font-weight: lighter;
 			    font-size: 0.9em;
+				text-transform: uppercase;
 			}
 		}
+
+		li:not(:last-child):after {
+			content: '•';
+			padding-left: 5px;
+		}
 	}
-
-	.footer {
-
-      @media (max-width: 767px) {
-          position: initial;
-      }
-
-	    position: absolute;
-	    bottom: 0px;
-	    padding-bottom: 15px;
-
-	    a{
-		    text-transform: uppercase;
-		    font-weight: lighter;
-		    display: block;
-		    color: #000;
-		  }
-	}
-
 
 }
 
@@ -123,7 +108,8 @@ div.expo {
 div.header {
   color: black;
   font-weight: lighter;
-  padding: 0 40px 20px;
+  padding-bottom: 20px;
+  margin: 0;
 }
 
 .spacer {
@@ -146,6 +132,7 @@ a#contact {
 }
 
 div.copyright {
+  padding: 50px 0 0 0;
   font-weight: lighter;
   font-size: 0.8em;
   color: #999;

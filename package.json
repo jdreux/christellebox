@@ -5,8 +5,8 @@
   "main": "index.js",
   "private": true,
   "engines": {
-    "node": "^18.12.1",
-    "npm": "^8.19.2"
+    "node": "^19",
+    "npm": "^9"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -31,11 +31,12 @@
     "rimraf": "~2.2.6"
   },
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-compass": "^0.3.9",
-    "grunt-concurrent": "^1.0.1",
-    "grunt-contrib-compass": "^1.1.1",
-    "grunt-contrib-watch": "^0.6.1",
-    "mysql": "~2.3.0"
+    "grunt": "1.5.3",
+    "grunt-concurrent": "3.0.0",
+    "grunt-contrib-sass": "^2.0.0",
+    "grunt-contrib-watch": "1.1.0",
+    "grunt-sass": "^3.1.0",
+    "mysql": "~2.3.0",
+    "node-sass": "^8.0.0"
   }
 }

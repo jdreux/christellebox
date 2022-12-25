@@ -21,7 +21,7 @@
 
 
       <div class="row">
-        <div class="col-sm-3 menu">
+        <div class="col-sm-12 menu">
           <div class="logo">
             <h1>{{title}}</h1>
           </div>
@@ -30,17 +30,13 @@
             {{#each albums}}
             <li><a href="#{{name}}">{{name}}</a></li>
             {{/each}}
+            <li><a href="#expositions">Expositions</a></li>
+            <li><a href="https://www.instagram.com/chrisdreuxart/">@chrisdreuxart</a></li>
           </ul>
-
-          <div class="footer">
-            <a href="#expositions">expositions</a>
-            <a href="#contact">contact</a>
-          </div>
         </div>
-
-        <div class="col-sm-3"></div>
-
-        <div class="col-sm-9">
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
 
           <div class="row">
             <div class="col-sm-12">
@@ -59,7 +55,7 @@
           </div>
           <div class="row">
             {{#each rows}}
-            <div class="col-sm-4">
+            <div class="col-sm-3">
             {{#each this}}
               <a href="{{src}}" title="{{name}}" class="art-thumbnail" data-gallery>
                 <img src="" alt="{{name}}" data-src="{{thumbnail_src}}"/>
@@ -82,52 +78,6 @@
             {{{content.expositions}}}
           </div>
 
-          <div class="row">
-            <div class="col-sm-12">
-              <a class="expo" name="contact"><h2>Contact</h2></a>
-            </div>
-          </div>
-
-          <div class="message-container">
-            <form class="form-horizontal">
-              <fieldset>
-              <!-- Text input-->
-              <div class="form-group">
-                <div class="col-md-12">
-                  <input id="textinput" name="textinput" type="text" placeholder="Email" class="form-control input-md">
-                </div>
-              </div>
-
-              <!-- Textarea -->
-              <div class="form-group">
-                <div class="col-md-12">
-                  <textarea class="form-control" id="textarea" name="textarea" placeholder="Message"></textarea>
-                </div>
-              </div>
-
-              <button id="send" class="btn btn-primary pull-right">Envoyer</button>
-
-              </fieldset>
-            </form>
-
-          </div>
-
-          <div class="spacer"></div>
-
-          <div class="row">
-            <div class="col-xs-4 text-center">
-              <a id="contact" href="mailto:chris.dreux@gmail.com"><i class="fa fa-envelope fa-2x"></i></a>
-            </div>
-            <div class="col-xs-4  text-center">
-              <a href="https://www.facebook.com/ChrisDreux.ARTNICE/"><i class="fa fa-facebook fa-2x"></i></a>
-            </div>
-            <div class="col-xs-4  text-center">
-              <a href="http://www.saatchiart.com/christelledreux"><i class="fa fa-shopping-cart fa-2x"></i></a>
-            </div>
-          </div>
-
-          <div class="spacer"></div>
-          <div class="spacer"></div>
           <div class="spacer"></div>
           <div class="copyright text-center">
             ©<script>document.write(new Date().getFullYear())</script> Christelle Dreux
