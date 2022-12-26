@@ -195,7 +195,7 @@ function fetchImage(dbPath, callback){
 }
 
 function fetchThumbnail(dbPath, callback){
-	dbx.filesGetThumbnail({path: dbPath, size: 'w640h480'}).then(function(data){
+	dbx.filesGetThumbnail({path: dbPath, size: 'w960h640', mode:'bestfit'}).then(function(data){
 		const localPath = path.join(DIST_DIR,'/thumbnails/',dbPath);
 		mkdirp(path.dirname(localPath), function(err){
 			if(err) return callback(err);
@@ -252,6 +252,24 @@ function loadAlbums(callback){
 						console.warn("Skipping file: ", file.path_lower);
 						return null;
 					}
+
+					//Launch pre-fetches
+					fetchImage(file.path_lower, function(err, localPath){
+						if(err){
+							console.error("Caught error fetching file "+file.path_lower, err);
+						} else {
+							console.log("Pre-fetched image at "+file.path_lower);
+						}
+					});
+
+					fetchThumbnail(file.path_lower, function(err, localPath){
+						if(err){
+							console.error("Caught error fetching file "+file.path_lower, err);
+						} else {
+							console.log("Pre-fetched thumbnail at "+file.path_lower);
+						}
+					});
+
 					return {
 						name: path.basename(
 							file.name,

@@ -21,3 +21,5 @@ server/secrets.js
 
 public/dist/
 node_modules
+
+.DS_Store
