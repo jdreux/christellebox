@@ -253,15 +253,7 @@ function loadAlbums(callback){
 						return null;
 					}
 
-					//Launch pre-fetches
-					fetchImage(file.path_lower, function(err, localPath){
-						if(err){
-							console.error("Caught error fetching file "+file.path_lower, err);
-						} else {
-							console.log("Pre-fetched image at "+file.path_lower);
-						}
-					});
-
+					//Launch pre-fetches (thumbnail only)
 					fetchThumbnail(file.path_lower, function(err, localPath){
 						if(err){
 							console.error("Caught error fetching file "+file.path_lower, err);
