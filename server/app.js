@@ -76,7 +76,7 @@ const ARTIST_CONFIG = {
 					rows: album.art.reduce(function(acc, art, index){
 						acc[index % acc.length].push(art);
 						return acc;
-					}, [[],[],[]]),
+					}, [[],[],[],[]]),
 				});
 			});
 		},
