@@ -300,6 +300,21 @@ app.get('/', function(req, res){
 	});
 });
 
+//endpoint to generate URLs for chd's reference art
+app.get('/reference_art', function(req, res){
+	fs.readdir('./public/static/chd-ref-images', function (err, files) {
+		//handling error
+		if (err) {
+			return console.log('Unable to scan directory: ' + err);
+			return res.json(err);
+		} 
+		//listing all files using forEach
+		return res.json(files.map(function(f){ 
+			return 'http://www.christelledreux.com/static/chd-ref-images/' + f;
+		}));
+	});
+});
+
 
 load(function(error, result){
 	if(error){
