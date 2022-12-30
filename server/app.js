@@ -63,7 +63,7 @@ const ARTIST_CONFIG = {
 		},
 	},
 	'chdbot' : {
-		dropboxPath: '/folder-sites/website-chdbot/albums/',
+		dropboxPath: '/folder-sites/ARTificial/albums/',
 		home: 'home-chd',
 		content: {
 			expositions: '/folder-sites/website-chdbot/expositions.md',
